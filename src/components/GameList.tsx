@@ -19,16 +19,6 @@ const GameList: React.FC<GameListProps> = ({ games, onEdit, onDelete }) => {
     }, {} as Record<number, string[]>)
   );
 
-  const toggleTag = (gameId: number, tag: string) => {
-    setSelectedTagsPerGame((prev) => {
-      const currentTags = prev[gameId] || [];
-      const updatedTags = currentTags.includes(tag)
-        ? currentTags.filter((t) => t !== tag)
-        : [...currentTags, tag];
-      return { ...prev, [gameId]: updatedTags };
-    });
-  };
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {games?.map((game) => (
