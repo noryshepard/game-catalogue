@@ -6,8 +6,6 @@ interface GameCardProps {
   game: Game;
   onEdit: (game: Game) => void;
   onDelete: (id: number) => void;
-  selectedTags?: string[]; // <- add this
-  toggleTag?: (gameId: number, tag: string) => void; // <- add this
 }
 
 const GameCard: React.FC<GameCardProps> = ({ game, onEdit, onDelete }) => {
