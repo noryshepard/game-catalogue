@@ -37,8 +37,6 @@ const GameList: React.FC<GameListProps> = ({ games, onEdit, onDelete }) => {
           game={game}
           onEdit={onEdit}
           onDelete={onDelete}
-          selectedTags={selectedTagsPerGame[game.id] || []}
-          toggleTag={toggleTag}
         />
       ))}
     </div>
