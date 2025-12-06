@@ -26,7 +26,15 @@ const App = () => {
     "Cooking",
     "Sports",
   ]);
+
+  //navbar menu
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [cardZoom, setCardZoom] = useState(1);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
+  const zoomIn = () => setCardZoom((z) => Math.min(z + 1, 3));
+  const zoomOut = () => setCardZoom((z) => Math.max(z - 1, 0));
 
   // Add new tag globally
   const addNewTag = (tag: string) => {
@@ -87,14 +95,20 @@ const App = () => {
     );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-900 text-black dark:text-white">
-      {/* Navbar at the top */}
-      <Navbar onMenuToggle={() => setIsMenuOpen(!isMenuOpen)} />
+    <div className={`${isDarkMode ? "dark" : ""}`}>
+      <Navbar
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
+        zoomIn={zoomIn}
+        zoomOut={zoomOut}
+        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+        onAddNew={handleAddNew}
+      />
       {/* Slide-out menu on the right */}
       {isMenuOpen && (
         <div
           className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-neutral-800 shadow-xl z-40 p-4 transform transition-transform duration-300
-    ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
+            ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
   `}
         >
           <h2 className="text-xl font-semibold mb-4">Menu</h2>
@@ -114,18 +128,9 @@ const App = () => {
           className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
         />
       )}
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">
-          My Game Catalogue
-        </h1>
-
-        <button
-          onClick={handleAddNew}
-          className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          + Add Game
-        </button>
-
+      <div className="pt-10">
+        {" "}
+        {/* Adjust pt-16 to match navbar height */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
           {/* Search bar */}
           <input
@@ -206,8 +211,8 @@ const App = () => {
           games={filteredGames}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          zoom={cardZoom}
         />
-
         <GameModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

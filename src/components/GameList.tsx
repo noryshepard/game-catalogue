@@ -6,9 +6,15 @@ interface GameListProps {
   games: Game[];
   onEdit: (game: Game) => void;
   onDelete: (gameId: number) => void;
+  zoom: number;
 }
 
-const GameList: React.FC<GameListProps> = ({ games, onEdit, onDelete }) => {
+const GameList: React.FC<GameListProps> = ({
+  games,
+  onEdit,
+  onDelete,
+  zoom,
+}) => {
   // Track selected tags per game (use game's tags by default)
   const [selectedTagsPerGame, setSelectedTagsPerGame] = useState<
     Record<number, string[]>
@@ -27,6 +33,7 @@ const GameList: React.FC<GameListProps> = ({ games, onEdit, onDelete }) => {
           game={game}
           onEdit={onEdit}
           onDelete={onDelete}
+          zoom={zoom}
         />
       ))}
     </div>
