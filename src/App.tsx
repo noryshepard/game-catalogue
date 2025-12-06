@@ -3,6 +3,7 @@ import GameList from "./components/GameList";
 import GameModal from "./components/GameModal";
 import { Game } from "./types/Game";
 import { games as initialGames } from "./data/games"; // import your data
+import Navbar from "./components/Navbar";
 
 const App = () => {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -25,10 +26,7 @@ const App = () => {
     "Cooking",
     "Sports",
   ]);
-
-  //hamburger menu
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Add new tag globally
   const addNewTag = (tag: string) => {
@@ -89,48 +87,33 @@ const App = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-900 dark:bg-gray-900">
-      {/* Container for relative positioning */}
-      <div className="relative flex flex-col items-end">
-        {/* Hamburger + dark mode */}
-        <div className="flex items-center gap-2 bg-gray-900 dark:bg-gray-900 p-2 rounded shadow">
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-900 transition-colors"
-          >
-            <div className="w-5 h-0.5 bg-gray-900 dark:bg-white mb-1"></div>
-            <div className="w-5 h-0.5 bg-gray-900 dark:bg-white mb-1"></div>
-            <div className="w-5 h-0.5 bg-gray-900 dark:bg-white"></div>
-          </button>
-
-          {/* Dark mode toggle */}
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded hover:bg-gray-900 dark:hover:bg-gray-900 transition-colors"
-          >
-            {darkMode ? "🌙" : "☀️"}
-          </button>
+    <div className="min-h-screen bg-white dark:bg-neutral-900 text-black dark:text-white">
+      {/* Navbar at the top */}
+      <Navbar onMenuToggle={() => setIsMenuOpen(!isMenuOpen)} />
+      {/* Slide-out menu on the right */}
+      {isMenuOpen && (
+        <div
+          className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-neutral-800 shadow-xl z-40 p-4 transform transition-transform duration-300
+    ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
+  `}
+        >
+          <h2 className="text-xl font-semibold mb-4">Menu</h2>
+          <ul className="space-y-3">
+            <li className="cursor-pointer hover:underline">Add Game</li>
+            <li className="cursor-pointer hover:underline">Manage Tags</li>
+            <li className="cursor-pointer hover:underline">Import CSV</li>
+            <li className="cursor-pointer hover:underline">Export CSV</li>
+            <li className="cursor-pointer hover:underline">About</li>
+          </ul>
         </div>
+      )}
 
-        {/* Expanded menu */}
-        {menuOpen && (
-          <div className="absolute top-full right-0 mt-2 flex flex-col gap-2 bg-gray-50 dark:bg-gray-900 p-2 rounded shadow w-40">
-            <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
-              Add Game
-            </button>
-            <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">
-              Manage Tags
-            </button>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-              Import CSV
-            </button>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-              Export CSV
-            </button>
-          </div>
-        )}
-      </div>
-
+      {isMenuOpen && ( //background overlay when menu is open
+        <div
+          onClick={() => setIsMenuOpen(false)}
+          className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
+        />
+      )}
       <div className="max-w-5xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6 text-center">
           My Game Catalogue

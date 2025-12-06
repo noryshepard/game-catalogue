@@ -27,7 +27,7 @@ const GameModal: React.FC<GameModalProps> = ({
   const [releaseDate, setReleaseDate] = useState<Date | null>(null);
   const [score, setScore] = useState<number | null>(null);
 
-  // Initialize modal state when editing or opening new
+  /* // Initialize modal state when editing or opening new
   useEffect(() => {
     if (gameToEdit) {
       setTitle(gameToEdit.title);
@@ -47,6 +47,31 @@ const GameModal: React.FC<GameModalProps> = ({
       setScore(null);
     }
   }, [gameToEdit]);
+*/
+
+  // Initialize modal state when editing or opening new
+  useEffect(() => {
+    if (!isOpen) return; // Only run when modal is opened
+    if (gameToEdit) {
+      // Editing existing game
+      setTitle(gameToEdit.title);
+      setCoverImage(gameToEdit.coverImage || "");
+      setStatus(gameToEdit.status);
+      setSelectedTags(gameToEdit.tags || []);
+      setCompletedDate(gameToEdit.completedDate || null);
+      setReleaseDate(gameToEdit.releaseDate || null);
+      setScore(gameToEdit.score || null);
+    } else {
+      // New game - clear everything
+      setTitle("");
+      setCoverImage("");
+      setStatus("backlog");
+      setSelectedTags([]);
+      setCompletedDate(null);
+      setReleaseDate(null);
+      setScore(null);
+    }
+  }, [isOpen, gameToEdit]);
 
   // Toggle tag selection
   const toggleTag = (tag: string) => {
