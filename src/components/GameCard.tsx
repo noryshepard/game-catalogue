@@ -64,6 +64,19 @@ const GameCard: React.FC<GameCardProps> = ({ game, onEdit, onDelete }) => {
         ))}
       </div>
 
+      {/* Status date */}
+      {game.status === "finished" && game.completedDate && (
+        <p className="text-sm text-gray-500 mt-1">
+          Completed: {game.completedDate.toLocaleDateString()}
+        </p>
+      )}
+
+      {game.status === "wishlist" && game.releaseDate && (
+        <p className="text-sm text-gray-500 mt-1">
+          Release: {game.releaseDate.toLocaleDateString()}
+        </p>
+      )}
+
       {/* Score */}
       {game.score !== null && (
         <p className="text-sm font-semibold mt-1">Score: {game.score}/10</p>

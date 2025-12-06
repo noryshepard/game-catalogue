@@ -4,7 +4,7 @@ export const games: Game[] = [
   {
     id: 1,
     title: "Elden Ring",
-    coverImage: "src/assets/elden_ring.jpg",
+    coverImage: "https://i.redd.it/wzqo9olsot471.png",
     status: "finished",        // one of your six statuses
     completedDate: new Date("2024-02-01"), // if finished, else null
     releaseDate: null,                     // if wishlist, else null
@@ -15,7 +15,7 @@ export const games: Game[] = [
   {
     id: 2,
     title: "Stardew Valley",
-    coverImage: "src/assets/stardew_valley.jpg",
+    coverImage: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/413150/header.jpg?t=1754692865",
     status: "replay",
     completedDate: null,
     releaseDate: null,

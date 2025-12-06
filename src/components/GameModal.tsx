@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Game } from "../types/Game";
+import { X, Check } from "lucide-react";
 
 interface GameModalProps {
   isOpen: boolean;
@@ -7,6 +8,7 @@ interface GameModalProps {
   onSave: (game: Game) => void;
   gameToEdit?: Game;
   availableTags: string[];
+  addNewTag: (tag: string) => void;
 }
 
 const GameModal: React.FC<GameModalProps> = ({
@@ -15,6 +17,7 @@ const GameModal: React.FC<GameModalProps> = ({
   onSave,
   gameToEdit,
   availableTags,
+  addNewTag,
 }) => {
   const [title, setTitle] = useState("");
   const [coverImage, setCoverImage] = useState("");
@@ -50,6 +53,26 @@ const GameModal: React.FC<GameModalProps> = ({
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
+  };
+
+  //insert new tag to available tags if not exist
+
+  const [newTag, setNewTag] = useState("");
+
+  const handleAddTag = () => {
+    const trimmed = newTag.trim();
+    if (!trimmed) return;
+
+    // ✅ Add to global availableTags
+    addNewTag(trimmed);
+
+    // ✅ Add to this game's selected tags
+    if (!selectedTags.includes(trimmed)) {
+      setSelectedTags([...selectedTags, trimmed]);
+    }
+
+    // ✅ Clear input box
+    setNewTag("");
   };
 
   // Close modal on Escape key
@@ -184,7 +207,7 @@ const GameModal: React.FC<GameModalProps> = ({
 
         {/* Tags */}
         <label className="block mb-2 font-semibold">Tags</label>
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="mb-6 space-y-1">
           {availableTags.map((tag) => {
             const isSelected = selectedTags.includes(tag); // check if this tag is selected
             return (
@@ -209,19 +232,45 @@ const GameModal: React.FC<GameModalProps> = ({
           })}
         </div>
 
-        {/* Buttons */}
-        <div className="flex justify-end gap-2">
+        {/* Add New Tag */}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
+            placeholder="Add new tag..."
+            className="flex-1 rounded px-3 py-1 bg-gray-900 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
+          />
+
           <button
-            onClick={onClose}
-            className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+            type="button"
+            onClick={handleAddTag}
+            className="px-4 py-1 bg-teal-500 text-white rounded hover:bg-teal-600 transition-colors"
           >
-            Cancel
+            +
           </button>
+        </div>
+
+        {/* Cancel & Save Buttons */}
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-700 rounded flex items-center gap-2 transition-all duration-200 transform hover:scale-105 hover:bg-gray-600"
+          >
+            <X className="w-5 h-5 stroke-red-500" strokeWidth={3} />
+            <span className="text-white">Cancel</span>
+          </button>
+
           <button
             onClick={handleSave}
-            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+            className="px-4 py-2 bg-green-500 rounded flex items-center gap-2 transition-all duration-200 transform hover:scale-105 hover:bg-green-600"
           >
-            {gameToEdit ? "Save" : "Add Game"}
+            <Check className="w-5 h-5 stroke-green-500" strokeWidth={3} />
+            <span className="text-white">
+              {/* green tick */}
+              {gameToEdit ? "Save" : "Add Game"}
+            </span>
           </button>
         </div>
       </div>
