@@ -138,27 +138,26 @@ const App = () => {
             className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
           />
         )}
-        <div className="pt-10">
+
+        {/* Sticky search/filter bar full width */}
+        <div className="sticky top-15 z-50 w-full bg-white dark:bg-neutral-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-5 border-gray-300 dark:border-gray-900">
           {" "}
-          {/* Adjust pt-16 to match navbar height */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-            {/* Search bar */}
-            <input
-              type="text"
-              placeholder="Search games..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded dark:bg-gray-800 w-full sm:w-1/2 focus:outline-none
+          {/* Search bar */}
+          <input
+            type="text"
+            placeholder="Search games..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded dark:bg-gray-800 w-full sm:w-1/2 focus:outline-none
     focus:ring-2
     focus:ring-teal-400
     focus:border-teal-400"
-            />
-
-            {/* Status filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="
+          />
+          {/* Status filter */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="
     block
     w-full
     sm:w-1/4
@@ -176,21 +175,20 @@ const App = () => {
     focus:ring-teal-400
     focus:border-teal-400
   "
-            >
-              <option value="all">All statuses</option>
-              <option value="finished">Finished</option>
-              <option value="backlog">Backlog</option>
-              <option value="replay">Replay</option>
-              <option value="abandoned">Abandoned</option>
-              <option value="suspended">Suspended</option>
-              <option value="wishlist">Wishlist</option>
-            </select>
-
-            {/* Search tag */}
-            <select
-              value={tagFilter}
-              onChange={(e) => setTagFilter(e.target.value)}
-              className="
+          >
+            <option value="all">All statuses</option>
+            <option value="finished">Finished</option>
+            <option value="backlog">Backlog</option>
+            <option value="replay">Replay</option>
+            <option value="abandoned">Abandoned</option>
+            <option value="suspended">Suspended</option>
+            <option value="wishlist">Wishlist</option>
+          </select>
+          {/* Search tag */}
+          <select
+            value={tagFilter}
+            onChange={(e) => setTagFilter(e.target.value)}
+            className="
     block
     w-full
     sm:w-1/4
@@ -208,15 +206,16 @@ const App = () => {
     focus:ring-teal-400
     focus:border-teal-400
   "
-            >
-              <option value="all">All tags</option>
-              {allTags.map((tag) => (
-                <option key={tag} value={tag}>
-                  {tag}
-                </option>
-              ))}
-            </select>
-          </div>
+          >
+            <option value="all">All tags</option>
+            {allTags.map((tag) => (
+              <option key={tag} value={tag}>
+                {tag}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="px-4 pt-4">
           <GameList
             games={filteredGames}
             onEdit={handleEdit}
