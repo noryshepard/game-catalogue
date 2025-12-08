@@ -28,7 +28,7 @@ const App = () => {
   ]);
 
   //navbar menu
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(localStorage.getItem('theme') === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches);
   const [cardZoom, setCardZoom] = useState(1);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -98,14 +98,15 @@ const App = () => {
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
+      localStorage.setItem('theme', 'dark')
     } else {
       document.documentElement.classList.remove("dark");
+      localStorage.removeItem('theme')
     }
   }, [isDarkMode]);
 
   return (
-    <div className={`${isDarkMode ? "dark" : ""}`}>
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors">
+      <div className="flex-1 min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors flex flex-col">
         <Navbar
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
@@ -138,17 +139,16 @@ const App = () => {
             className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
           />
         )}
-
-        {/* Sticky search/filter bar full width */}
-        <div className="sticky top-15 z-50 w-full bg-white dark:bg-neutral-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-5 border-gray-300 dark:border-gray-900">
-          {" "}
-          {/* Search bar */}
-          <input
-            type="text"
-            placeholder="Search games..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded dark:bg-gray-800 w-full sm:w-1/2 focus:outline-none
+        <div className="flex-1 w-full max-w-6xl mx-auto p-4 flex flex-col gap-4">
+          {/* Adjust pt-16 to match navbar height */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            {/* Search bar */}
+            <input
+              type="text"
+              placeholder="Search games..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded dark:bg-gray-800 w-full sm:w-1/2 focus:outline-none
     focus:ring-2
     focus:ring-teal-400
     focus:border-teal-400"
@@ -215,7 +215,6 @@ const App = () => {
             ))}
           </select>
         </div>
-        <div className="px-4 pt-4">
           <GameList
             games={filteredGames}
             onEdit={handleEdit}
@@ -230,7 +229,6 @@ const App = () => {
             availableTags={availableTags}
             addNewTag={addNewTag}
           />
-        </div>
       </div>
     </div>
   );

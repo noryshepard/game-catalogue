@@ -1,6 +1,6 @@
 /* src/index.css */
 @import "tailwindcss";
-
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -50,9 +50,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;

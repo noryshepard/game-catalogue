@@ -19,8 +19,8 @@ const Navbar: React.FC<NavbarProps> = ({
   onAddNew,
 }) => {
   return (
-    <nav className="fixed top-0 left-0 w-full bg-white dark:bg-neutral-800 border-gray-300 dark:border-gray-700 px-0.01 sm:px-0.01 py-0.01 fixed top-0 w-full z-50">
-      <div className="max-w-6xl mx-auto px-0.01 py-0.5 flex items-center justify-between">
+    <nav className="sticky top-0 z-100 w-full bg-white dark:bg-gray-800 px-4 py-0.5">
+      <div className="max-w-6xl mx-auto flex items-center justify-between">
         {/* Left side: Dark mode + Zoom */}
         <div className="flex items-center space-x-3">
           <button
