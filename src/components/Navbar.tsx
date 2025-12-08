@@ -18,15 +18,6 @@ const Navbar: React.FC<NavbarProps> = ({
   onMenuToggle,
   onAddNew,
 }) => {
-  // Sync dark mode with <html>
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
-
   return (
     <nav className="fixed top-0 left-0 w-full bg-white dark:bg-neutral-800 border-gray-300 dark:border-gray-700 px-0.01 sm:px-0.01 py-0.01 fixed top-0 w-full z-50">
       <div className="max-w-6xl mx-auto px-0.01 py-0.5 flex items-center justify-between">

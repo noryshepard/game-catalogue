@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import GameList from "./components/GameList";
 import GameModal from "./components/GameModal";
 import { Game } from "./types/Game";
@@ -28,7 +28,7 @@ const App = () => {
   ]);
 
   //navbar menu
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [cardZoom, setCardZoom] = useState(1);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -94,133 +94,144 @@ const App = () => {
       tagFilter === "all" ? true : game.tags.includes(tagFilter)
     );
 
+  //sync html dark class with isDarkMode
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
   return (
     <div className={`${isDarkMode ? "dark" : ""}`}>
-      <Navbar
-        isDarkMode={isDarkMode}
-        toggleDarkMode={toggleDarkMode}
-        zoomIn={zoomIn}
-        zoomOut={zoomOut}
-        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
-        onAddNew={handleAddNew}
-      />
-      {/* Slide-out menu on the right */}
-      {isMenuOpen && (
-        <div
-          className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-neutral-800 shadow-xl z-40 p-4 transform transition-transform duration-300
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors">
+        <Navbar
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+          zoomIn={zoomIn}
+          zoomOut={zoomOut}
+          onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+          onAddNew={handleAddNew}
+        />
+        {/* Slide-out menu on the right */}
+        {isMenuOpen && (
+          <div
+            className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-40 p-4 transform transition-transform duration-300
             ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
   `}
-        >
-          <h2 className="text-xl font-semibold mb-4">Menu</h2>
-          <ul className="space-y-3">
-            <li className="cursor-pointer hover:underline">Add Game</li>
-            <li className="cursor-pointer hover:underline">Manage Tags</li>
-            <li className="cursor-pointer hover:underline">Import CSV</li>
-            <li className="cursor-pointer hover:underline">Export CSV</li>
-            <li className="cursor-pointer hover:underline">About</li>
-          </ul>
-        </div>
-      )}
+          >
+            <h2 className="text-xl font-semibold mb-4">Menu</h2>
+            <ul className="space-y-3">
+              <li className="cursor-pointer hover:underline">Add Game</li>
+              <li className="cursor-pointer hover:underline">Manage Tags</li>
+              <li className="cursor-pointer hover:underline">Import CSV</li>
+              <li className="cursor-pointer hover:underline">Export CSV</li>
+              <li className="cursor-pointer hover:underline">About</li>
+            </ul>
+          </div>
+        )}
 
-      {isMenuOpen && ( //background overlay when menu is open
-        <div
-          onClick={() => setIsMenuOpen(false)}
-          className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
-        />
-      )}
-      <div className="pt-10">
-        {" "}
-        {/* Adjust pt-16 to match navbar height */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-          {/* Search bar */}
-          <input
-            type="text"
-            placeholder="Search games..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded dark:bg-gray-800 w-full sm:w-1/2 focus:outline-none
+        {isMenuOpen && ( //background overlay when menu is open
+          <div
+            onClick={() => setIsMenuOpen(false)}
+            className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
+          />
+        )}
+        <div className="pt-10">
+          {" "}
+          {/* Adjust pt-16 to match navbar height */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+            {/* Search bar */}
+            <input
+              type="text"
+              placeholder="Search games..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded dark:bg-gray-800 w-full sm:w-1/2 focus:outline-none
     focus:ring-2
     focus:ring-teal-400
     focus:border-teal-400"
+            />
+
+            {/* Status filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="
+    block
+    w-full
+    sm:w-1/4
+    px-3
+    py-2
+    border
+    border-gray-300
+    rounded
+    bg-white
+    dark:bg-gray-800
+    text-gray-900
+    dark:text-gray-100
+    focus:outline-none
+    focus:ring-2
+    focus:ring-teal-400
+    focus:border-teal-400
+  "
+            >
+              <option value="all">All statuses</option>
+              <option value="finished">Finished</option>
+              <option value="backlog">Backlog</option>
+              <option value="replay">Replay</option>
+              <option value="abandoned">Abandoned</option>
+              <option value="suspended">Suspended</option>
+              <option value="wishlist">Wishlist</option>
+            </select>
+
+            {/* Search tag */}
+            <select
+              value={tagFilter}
+              onChange={(e) => setTagFilter(e.target.value)}
+              className="
+    block
+    w-full
+    sm:w-1/4
+    px-3
+    py-2
+    border
+    border-gray-300
+    rounded
+    bg-white
+    dark:bg-gray-800
+    text-gray-900
+    dark:text-gray-100
+    focus:outline-none
+    focus:ring-2
+    focus:ring-teal-400
+    focus:border-teal-400
+  "
+            >
+              <option value="all">All tags</option>
+              {allTags.map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
+            </select>
+          </div>
+          <GameList
+            games={filteredGames}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            zoom={cardZoom}
           />
-
-          {/* Status filter */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="
-    block
-    w-full
-    sm:w-1/4
-    px-3
-    py-2
-    border
-    border-gray-300
-    rounded
-    bg-white
-    dark:bg-gray-800
-    text-gray-900
-    dark:text-gray-100
-    focus:outline-none
-    focus:ring-2
-    focus:ring-teal-400
-    focus:border-teal-400
-  "
-          >
-            <option value="all">All statuses</option>
-            <option value="finished">Finished</option>
-            <option value="backlog">Backlog</option>
-            <option value="replay">Replay</option>
-            <option value="abandoned">Abandoned</option>
-            <option value="suspended">Suspended</option>
-            <option value="wishlist">Wishlist</option>
-          </select>
-
-          {/* Search tag */}
-          <select
-            value={tagFilter}
-            onChange={(e) => setTagFilter(e.target.value)}
-            className="
-    block
-    w-full
-    sm:w-1/4
-    px-3
-    py-2
-    border
-    border-gray-300
-    rounded
-    bg-white
-    dark:bg-gray-800
-    text-gray-900
-    dark:text-gray-100
-    focus:outline-none
-    focus:ring-2
-    focus:ring-teal-400
-    focus:border-teal-400
-  "
-          >
-            <option value="all">All tags</option>
-            {allTags.map((tag) => (
-              <option key={tag} value={tag}>
-                {tag}
-              </option>
-            ))}
-          </select>
+          <GameModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleSave}
+            gameToEdit={gameToEdit}
+            availableTags={availableTags}
+            addNewTag={addNewTag}
+          />
         </div>
-        <GameList
-          games={filteredGames}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          zoom={cardZoom}
-        />
-        <GameModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleSave}
-          gameToEdit={gameToEdit}
-          availableTags={availableTags}
-          addNewTag={addNewTag}
-        />
       </div>
     </div>
   );
