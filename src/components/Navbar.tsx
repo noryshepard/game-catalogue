@@ -19,13 +19,13 @@ const Navbar: React.FC<NavbarProps> = ({
   onAddNew,
 }) => {
   return (
-    <nav className="sticky top-0 z-100 w-full bg-white dark:bg-gray-800 px-4 py-0.5">
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
+    <nav className="sticky top-0 z-100 w-full bg-white dark:bg-gray-800 px-4 py-2">
+      <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
         {/* Left side: Dark mode + Zoom */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={toggleDarkMode}
-            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
           </button>
@@ -33,7 +33,7 @@ const Navbar: React.FC<NavbarProps> = ({
           {/* Zoom out */}
           <button
             onClick={zoomOut}
-            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             <ZoomOut size={20} />
           </button>
@@ -41,26 +41,24 @@ const Navbar: React.FC<NavbarProps> = ({
           {/* Zoom in */}
           <button
             onClick={zoomIn}
-            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             <ZoomIn size={20} />
           </button>
         </div>
-        <h1 className="font-semibold text-center text-base md:text-lg mx-auto">
+        <h1 className="font-bold text-center text-xl md:text-[1.5rem] dark:text-white mx-auto w-full sm:w-auto -order-1 sm:order-0">
           My Game Catalogue
         </h1>
         {/* Hamburger Button - menu right side */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           {/* Add Game button */}
           <button
             onClick={onAddNew}
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold px-3 py-1 rounded transition-colors"
-          >
-            + Add Game
-          </button>
+            className="hover:bg-green-600 font-semibold rounded transition-colors text-xs"
+          >+ Add Game</button>
           <button
             onClick={onMenuToggle}
-            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             <Menu size={20} />
           </button>

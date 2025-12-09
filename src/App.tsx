@@ -28,7 +28,10 @@ const App = () => {
   ]);
 
   //navbar menu
-  const [isDarkMode, setIsDarkMode] = useState(localStorage.getItem('theme') === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const [isDarkMode, setIsDarkMode] = useState(
+    localStorage.getItem("theme") === "dark" ||
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
   const [cardZoom, setCardZoom] = useState(1);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -98,27 +101,28 @@ const App = () => {
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
-      localStorage.setItem('theme', 'dark')
+      localStorage.setItem("theme", "dark");
     } else {
       document.documentElement.classList.remove("dark");
-      localStorage.removeItem('theme')
+      localStorage.removeItem("theme");
     }
   }, [isDarkMode]);
 
   return (
-      <div className="flex-1 min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors flex flex-col">
-        <Navbar
-          isDarkMode={isDarkMode}
-          toggleDarkMode={toggleDarkMode}
-          zoomIn={zoomIn}
-          zoomOut={zoomOut}
-          onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
-          onAddNew={handleAddNew}
-        />
+    <>
+      <Navbar
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
+        zoomIn={zoomIn}
+        zoomOut={zoomOut}
+        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+        onAddNew={handleAddNew}
+      />
+      <div className="flex-1 min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors flex flex-col p-4">
         {/* Slide-out menu on the right */}
         {isMenuOpen && (
           <div
-            className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-40 p-4 transform transition-transform duration-300
+            className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-40 transform transition-transform duration-300
             ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
   `}
           >
@@ -139,7 +143,7 @@ const App = () => {
             className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
           />
         )}
-        <div className="flex-1 w-full max-w-6xl mx-auto p-4 flex flex-col gap-4">
+        <div className="flex-1 w-full max-w-6xl mx-auto flex flex-col gap-4">
           {/* Adjust pt-16 to match navbar height */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             {/* Search bar */}
@@ -152,12 +156,12 @@ const App = () => {
     focus:ring-2
     focus:ring-teal-400
     focus:border-teal-400"
-          />
-          {/* Status filter */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="
+            />
+            {/* Status filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="
     block
     w-full
     sm:w-1/4
@@ -175,20 +179,20 @@ const App = () => {
     focus:ring-teal-400
     focus:border-teal-400
   "
-          >
-            <option value="all">All statuses</option>
-            <option value="finished">Finished</option>
-            <option value="backlog">Backlog</option>
-            <option value="replay">Replay</option>
-            <option value="abandoned">Abandoned</option>
-            <option value="suspended">Suspended</option>
-            <option value="wishlist">Wishlist</option>
-          </select>
-          {/* Search tag */}
-          <select
-            value={tagFilter}
-            onChange={(e) => setTagFilter(e.target.value)}
-            className="
+            >
+              <option value="all">All statuses</option>
+              <option value="finished">Finished</option>
+              <option value="backlog">Backlog</option>
+              <option value="replay">Replay</option>
+              <option value="abandoned">Abandoned</option>
+              <option value="suspended">Suspended</option>
+              <option value="wishlist">Wishlist</option>
+            </select>
+            {/* Search tag */}
+            <select
+              value={tagFilter}
+              onChange={(e) => setTagFilter(e.target.value)}
+              className="
     block
     w-full
     sm:w-1/4
@@ -206,15 +210,15 @@ const App = () => {
     focus:ring-teal-400
     focus:border-teal-400
   "
-          >
-            <option value="all">All tags</option>
-            {allTags.map((tag) => (
-              <option key={tag} value={tag}>
-                {tag}
-              </option>
-            ))}
-          </select>
-        </div>
+            >
+              <option value="all">All tags</option>
+              {allTags.map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
+            </select>
+          </div>
           <GameList
             games={filteredGames}
             onEdit={handleEdit}
@@ -229,8 +233,9 @@ const App = () => {
             availableTags={availableTags}
             addNewTag={addNewTag}
           />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
