@@ -4,9 +4,11 @@ import GameModal from "./components/GameModal";
 import { Game } from "./types/Game";
 import { games as initialGames } from "./data/games"; // import your data
 import Navbar from "./components/Navbar";
+import { useConfirm } from "./hooks/useConfirm";
 
 const App = () => {
   const [games, setGames] = useState<Game[]>(initialGames);
+  const { confirm, ConfirmDialog } = useConfirm();
   const [availableTags, setAvailableTags] = useState<string[]>([
     "RPG",
     "Adventure",
@@ -60,7 +62,14 @@ const App = () => {
   };
 
   // Delete game from list
-  const handleDelete = (gameId: number) => {
+
+  const handleDelete = async (gameId: number) => {
+    // Ask user for confirmation
+    const ok = await confirm("Are you sure you want to delete this game?");
+    if (!ok) return;
+
+    // If confirmed → delete normally
+
     setGames((prev) => prev.filter((g) => g.id !== gameId));
   };
 
@@ -152,7 +161,10 @@ const App = () => {
               placeholder="Search games..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded dark:bg-gray-800 w-full sm:w-1/2 focus:outline-none
+              className="px-3 py-2 border border-gray-300 rounded bg-white
+    dark:bg-gray-800
+    text-gray-900
+    dark:text-gray-100 w-full sm:w-1/2 focus:outline-none
     focus:ring-2
     focus:ring-teal-400
     focus:border-teal-400"
@@ -225,6 +237,8 @@ const App = () => {
             onDelete={handleDelete}
             zoom={cardZoom}
           />
+          <ConfirmDialog />
+
           <GameModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
