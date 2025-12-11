@@ -38,8 +38,15 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
-  const zoomIn = () => setCardZoom((z) => Math.min(z + 1, 3));
+  const zoomIn = () => setCardZoom((z) => Math.min(z + 1, 4));
   const zoomOut = () => setCardZoom((z) => Math.max(z - 1, 0));
+
+  //change view from grid to list
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  const toggleViewMode = () => {
+    setViewMode((prev) => (prev === "grid" ? "list" : "grid"));
+  };
 
   // Add new tag globally
   const addNewTag = (tag: string) => {
@@ -122,6 +129,8 @@ const App = () => {
       <Navbar
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
+        viewMode={viewMode}
+        onToggleView={toggleViewMode}
         zoomIn={zoomIn}
         zoomOut={zoomOut}
         onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
@@ -236,6 +245,7 @@ const App = () => {
             onEdit={handleEdit}
             onDelete={handleDelete}
             zoom={cardZoom}
+            viewMode={viewMode}
           />
           <ConfirmDialog />
 

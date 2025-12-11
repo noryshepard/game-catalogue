@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { Menu, Sun, Moon, ZoomIn, ZoomOut, Plus } from "lucide-react";
+import {
+  Menu,
+  Sun,
+  Moon,
+  ZoomIn,
+  ZoomOut,
+  LayoutGrid,
+  List,
+} from "lucide-react";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -8,6 +16,8 @@ interface NavbarProps {
   zoomOut: () => void;
   onMenuToggle: () => void;
   onAddNew: () => void;
+  viewMode: "grid" | "list";
+  onToggleView: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -17,6 +27,8 @@ const Navbar: React.FC<NavbarProps> = ({
   zoomOut,
   onMenuToggle,
   onAddNew,
+  viewMode,
+  onToggleView,
 }) => {
   return (
     <nav className="sticky top-0 z-100 w-full bg-white dark:bg-gray-800 px-4 py-2">
@@ -45,6 +57,23 @@ const Navbar: React.FC<NavbarProps> = ({
           >
             <ZoomIn size={20} />
           </button>
+
+          {/* View Mode Toggle */}
+          <button
+            onClick={onToggleView}
+            className="p-2 rounded-lg hover:bg-zinc-800 transition"
+            title={
+              viewMode === "grid"
+                ? "Switch to List View"
+                : "Switch to Grid View"
+            }
+          >
+            {viewMode === "grid" ? (
+              <List className="w-5 h-5" />
+            ) : (
+              <LayoutGrid className="w-5 h-5" />
+            )}
+          </button>
         </div>
         <h1 className="font-bold text-center text-xl md:text-[1.5rem] dark:text-white mx-auto w-full sm:w-auto -order-1 sm:order-0">
           My Game Catalogue
@@ -55,7 +84,9 @@ const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onAddNew}
             className="hover:bg-green-600 font-semibold rounded transition-colors text-xs"
-          >+ Add Game</button>
+          >
+            + Add Game
+          </button>
           <button
             onClick={onMenuToggle}
             className="rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
