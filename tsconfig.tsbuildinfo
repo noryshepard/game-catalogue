@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/gamecard.tsx","./src/components/gamelist.tsx","./src/components/gamemodal.tsx","./src/components/navbar.tsx","./src/data/games.ts","./src/hooks/useconfirm.tsx","./src/pages/tagmanager.tsx","./src/types/game.ts"],"errors":true,"version":"5.9.3"}

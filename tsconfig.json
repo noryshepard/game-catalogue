@@ -9,6 +9,9 @@
 
 {
   "compilerOptions": {
+    "outDir": "dist",        // <- ensure JS goes to 'dist'
+    "noEmit": false,         // <- allow emit
+    "allowJs": false,        // <- prevent compiling JS files inside src
     "target": "ESNext",
     "module": "ESNext",
     "jsx": "react-jsx",

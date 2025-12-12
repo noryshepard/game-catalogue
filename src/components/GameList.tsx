@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Game } from "../types/Game";
 import GameCard from "./GameCard";
+import { MotionDiv } from "./MotionDiv";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface GameListProps {
@@ -50,7 +51,7 @@ const GameList: React.FC<GameListProps> = ({
   const isList = viewMode === "list";
 
   return (
-    <motion.div className={wrapperClass} layout>
+    <MotionDiv className={wrapperClass} layout>
       <AnimatePresence>
         {games?.map((game) => (
           <motion.div
@@ -60,7 +61,7 @@ const GameList: React.FC<GameListProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={isList ? "" : "min-h-[350px] h-full"} // uniform height in grid view
+            {...({ className: isList ? "" : "min-h-[350px] h-full" } as any)} // uniform height in grid view
           >
             <GameCard
               key={game.id}
@@ -73,7 +74,7 @@ const GameList: React.FC<GameListProps> = ({
           </motion.div>
         ))}
       </AnimatePresence>
-    </motion.div>
+    </MotionDiv>
   );
 };
 
