@@ -28,6 +28,17 @@ const GameCard: React.FC<GameCardProps> = ({
       ? "text-base"
       : "text-lg";
 
+  const coverWidth =
+    zoom === 0
+      ? "w-20" // 80px
+      : zoom === 1
+      ? "w-24" // 96px
+      : zoom === 2
+      ? "w-28" // 112px
+      : zoom === 3
+      ? "w-32" // 128px
+      : "w-36"; // 144px
+
   const isList = viewMode === "list";
 
   return (
@@ -47,15 +58,15 @@ const GameCard: React.FC<GameCardProps> = ({
           alt={game.title}
           className={
             isList
-              ? "w-24 h-auto object-cover rounded-md" // LIST VIEW
-              : "w-full aspect-video object-cover rounded-md" // GRID VIEW
+              ? `${coverWidth} h-auto object-cover rounded-md flex-shrink-0`
+              : "w-full aspect-video object-cover rounded-md"
           }
         />
       ) : (
         <div
           className={
             isList
-              ? "w-24 h-auto rounded-md bg-zinc-800 flex items-center justify-center text-zinc-500 text-[0.8em]"
+              ? `${coverWidth} h-auto rounded-md bg-zinc-800 flex items-center justify-center text-zinc-500 text-[0.8em] flex-shrink-0`
               : "w-full aspect-video rounded-md bg-zinc-800 flex items-center justify-center text-zinc-500 text-[1em]"
           }
         >

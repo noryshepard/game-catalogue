@@ -27,28 +27,6 @@ const GameModal: React.FC<GameModalProps> = ({
   const [releaseDate, setReleaseDate] = useState<Date | null>(null);
   const [score, setScore] = useState<number | null>(null);
 
-  /* // Initialize modal state when editing or opening new
-  useEffect(() => {
-    if (gameToEdit) {
-      setTitle(gameToEdit.title);
-      setCoverImage(gameToEdit.coverImage || "");
-      setStatus(gameToEdit.status);
-      setSelectedTags(gameToEdit.tags || []);
-      setCompletedDate(gameToEdit.completedDate || null);
-      setReleaseDate(gameToEdit.releaseDate || null);
-      setScore(gameToEdit.score || null);
-    } else {
-      setTitle("");
-      setCoverImage("");
-      setStatus("backlog");
-      setSelectedTags([]);
-      setCompletedDate(null);
-      setReleaseDate(null);
-      setScore(null);
-    }
-  }, [gameToEdit]);
-*/
-
   // Initialize modal state when editing or opening new
   useEffect(() => {
     if (!isOpen) return; // Only run when modal is opened
@@ -223,7 +201,7 @@ const GameModal: React.FC<GameModalProps> = ({
           />
 
           {/* Optional visual markers */}
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
+          <div className="flex justify-between text-xs text-gray-800 dark:text-white mt-1">
             {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
               <span key={n}>{n}</span>
             ))}
@@ -243,7 +221,7 @@ const GameModal: React.FC<GameModalProps> = ({
                 className={`px-3 py-1 rounded-full border font-semibold text-sm transition-colors ${
                   selectedTags.includes(tag)
                     ? "text-black border-black" // text and border controlled
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600" // unselected tags
+                    : "bg-gray-200 dark:bg-gray-900 text-gray-200 dark:text-gray-200 border-gray-200 dark:border-gray-100" // unselected tags
                 }`}
                 style={{
                   backgroundColor: selectedTags.includes(tag)
@@ -264,13 +242,18 @@ const GameModal: React.FC<GameModalProps> = ({
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             placeholder="Add new tag..."
-            className="flex-1 rounded px-3 py-1 bg-gray-900 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            className="flex-1 rounded px-3 py-1 bg-gray-200 dark:bg-gray-900 text-black dark:text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
 
           <button
             type="button"
             onClick={handleAddTag}
-            className="px-4 py-1 bg-teal-500 text-white rounded hover:bg-teal-600 transition-colors"
+            className="    px-4 py-1 rounded
+    bg-teal-500 text-white
+    dark:bg-teal-600 dark:text-white
+    hover:bg-teal-600 dark:hover:bg-teal-500
+    transition-colors
+  "
           >
             +
           </button>
