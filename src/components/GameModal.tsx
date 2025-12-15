@@ -264,7 +264,7 @@ const GameModal: React.FC<GameModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-gray-700 rounded flex items-center gap-2 transition-all duration-200 transform hover:scale-105 hover:bg-gray-600"
+            className="px-4 py-2 bg-gray-700 dark:bg-white rounded flex items-center gap-2 transition-all duration-200 transform hover:scale-105 hover:bg-gray-600"
           >
             <X className="w-5 h-5 stroke-red-500" strokeWidth={3} />
             <span className="text-white">Cancel</span>
@@ -272,7 +272,7 @@ const GameModal: React.FC<GameModalProps> = ({
 
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-green-500 rounded flex items-center gap-2 transition-all duration-200 transform hover:scale-105 hover:bg-green-600"
+            className="px-4 py-2 bg-green-500 dark:bg-white rounded flex items-center gap-2 transition-all duration-200 transform hover:scale-105 hover:bg-green-600"
           >
             <Check className="w-5 h-5 stroke-green-500" strokeWidth={3} />
             <span className="text-white">

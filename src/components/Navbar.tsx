@@ -9,6 +9,8 @@ import {
   List,
 } from "lucide-react";
 
+import Button from "../components/Button";
+
 interface NavbarProps {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
@@ -35,33 +37,41 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
         {/* Left side: Dark mode + Zoom */}
         <div className="flex items-center gap-2">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={toggleDarkMode}
-            className="rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Toggle dark mode"
           >
-            {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
+            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </Button>
 
           {/* Zoom out */}
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={zoomOut}
-            className="rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Zoom out"
           >
             <ZoomOut size={20} />
-          </button>
+          </Button>
 
           {/* Zoom in */}
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={zoomIn}
-            className="rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Zoom in"
           >
             <ZoomIn size={20} />
-          </button>
+          </Button>
 
           {/* View Mode Toggle */}
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onToggleView}
-            className="p-2 rounded-lg hover:bg-zinc-800 transition"
+            aria-label="Switch to List/Grid View"
             title={
               viewMode === "grid"
                 ? "Switch to List View"
@@ -73,26 +83,32 @@ const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <LayoutGrid className="w-5 h-5" />
             )}
-          </button>
+          </Button>
         </div>
-        <h1 className="font-bold text-center text-xl md:text-[1.5rem] dark:text-white mx-auto w-full sm:w-auto -order-1 sm:order-0">
+        <h1 className="font-bold text-center text-xl md:text-[1.5rem] text-black dark:text-white mx-auto w-full sm:w-auto -order-1 sm:order-0">
           My Game Catalogue
         </h1>
         {/* Hamburger Button - menu right side */}
         <div className="flex items-center gap-2">
           {/* Add Game button */}
-          <button
+          <Button
+            variant="custom"
+            size="sm"
             onClick={onAddNew}
-            className="hover:bg-green-600 font-semibold rounded transition-colors text-xs"
+            aria-label="Add New Game"
+            className="bg-teal-400 text-black border-transparent hover:bg-teal-500 dark:bg-purple-700 dark:text-white dark:border-transparent dark:hover:bg-purple-800"
           >
             + Add Game
-          </button>
-          <button
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onMenuToggle}
-            className="rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Open Menu"
           >
             <Menu size={20} />
-          </button>
+          </Button>
         </div>
       </div>
     </nav>
