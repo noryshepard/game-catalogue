@@ -7,6 +7,7 @@ import {
   ZoomOut,
   LayoutGrid,
   List,
+  Plus,
 } from "lucide-react";
 
 import Button from "../components/Button";
@@ -98,7 +99,11 @@ const Navbar: React.FC<NavbarProps> = ({
             aria-label="Add New Game"
             className="bg-teal-400 text-black border-transparent hover:bg-teal-500 dark:bg-purple-700 dark:text-white dark:border-transparent dark:hover:bg-purple-800"
           >
-            + Add Game
+            <Plus
+              className="w-5 h-5 stroke-black dark:stroke-white"
+              strokeWidth={2}
+            />
+            <span className="text-black dark:text-white">Add Game</span>
           </Button>
 
           <Button

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Game } from "../types/Game";
-import { X, Check } from "lucide-react";
+import { X, Check, Plus } from "lucide-react";
+import Button from "../components/Button";
 
 interface GameModalProps {
   isOpen: boolean;
@@ -245,41 +246,47 @@ const GameModal: React.FC<GameModalProps> = ({
             className="flex-1 rounded px-3 py-1 bg-gray-200 dark:bg-gray-900 text-black dark:text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
 
-          <button
-            type="button"
+          <Button
+            type="button" // to prevent submitting the form
+            variant="ghost"
+            size="sm"
             onClick={handleAddTag}
-            className="    px-4 py-1 rounded
-    bg-teal-500 text-white
-    dark:bg-teal-600 dark:text-white
-    hover:bg-teal-600 dark:hover:bg-teal-500
-    transition-colors
-  "
+            aria-label="Add new tag"
           >
-            +
-          </button>
+            <Plus
+              className="w-5 h-5 stroke-black dark:stroke-white"
+              strokeWidth={3}
+            />
+          </Button>
         </div>
 
         {/* Cancel & Save Buttons */}
         <div className="mt-6 flex justify-end gap-3">
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onClose}
-            className="px-4 py-2 bg-gray-700 dark:bg-white rounded flex items-center gap-2 transition-all duration-200 transform hover:scale-105 hover:bg-gray-600"
+            aria-label="Cancel adding or editing game"
+            className="bg-gray-300 dark:bg-gray-900"
           >
             <X className="w-5 h-5 stroke-red-500" strokeWidth={3} />
-            <span className="text-white">Cancel</span>
-          </button>
+            <span className="text-black dark:text-white">Cancel</span>
+          </Button>
 
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={handleSave}
-            className="px-4 py-2 bg-green-500 dark:bg-white rounded flex items-center gap-2 transition-all duration-200 transform hover:scale-105 hover:bg-green-600"
+            aria-label="Save your changes: add game or edit game"
+            className="bg-gray-300 dark:bg-gray-900"
           >
+            {" "}
+            {/* green tick */}
             <Check className="w-5 h-5 stroke-green-500" strokeWidth={3} />
-            <span className="text-white">
-              {/* green tick */}
+            <span className="text-black dark:text-white">
               {gameToEdit ? "Save" : "Add Game"}
             </span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>
