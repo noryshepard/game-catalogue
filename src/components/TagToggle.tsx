@@ -2,21 +2,22 @@ import React from "react";
 
 export interface TagToggleProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Whether the toggle is active */
-  selected: boolean;
+  /** Whether the toggle is active, added ? for display only tags */
+  selected?: boolean;
 
   /** Text shown inside the toggle */
   label: string;
 }
 
 const TagToggle: React.FC<TagToggleProps> = ({
-  selected,
+  /** because selected?, is needs to be defaulted to false**/
+  selected = false,
   label,
   className = "",
   ...props
 }) => {
   const baseClasses =
-    "inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-semibold border transition-colors focus:outline-none focus:ring-2 focus:ring-teal-400";
+    "inline-flex items-center justify-center px-3 py-1 rounded-full font-semibold border transition-colors focus:outline-none focus:ring-2 focus:ring-teal-400";
 
   const selectedClasses = "bg-teal-400 text-black border-teal-500";
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { Game } from "../types/Game";
 import { Edit, Trash } from "lucide-react";
+import TagBadge from "../components/TagBadge";
 
 interface GameCardProps {
   game: Game;
@@ -119,36 +120,14 @@ const GameCard: React.FC<GameCardProps> = ({
           </span>
         </div>
       </div>
+
       {/* Tags */}
-      <div
-        className={`flex flex-wrap gap-2 ${
-          isList ? "items-center" : "" // LIST: vertically center tags
-        }`}
-      >
+      <div className={`flex flex-wrap gap-2 ${isList ? "items-center" : ""}`}>
         {game.tags.map((tag) => (
-          <span
-            key={tag}
-            //className="px-3 py-1 text-[1em] rounded-full bg-gray-800 border border-gray-700 text-gray-200 font-medium"
-            className={`
-        px-3 py-1 rounded-full border border-gray-700 font-medium
-        bg-gray-800 text-gray-200
-        ${
-          zoom === 0
-            ? "text-sm"
-            : zoom === 1
-            ? "text-text-base"
-            : zoom === 2
-            ? "text-lg"
-            : zoom === 3
-            ? "text-xl"
-            : "text-2xl"
-        }
-      `}
-          >
-            {tag}
-          </span>
+          <TagBadge key={tag} label={tag} zoom={zoom} />
         ))}
       </div>
+
       <div className="mt-3 flex flex-col items-start gap-1">
         {/* Status date */}
         {game.status === "finished" && game.completedDate && (
@@ -172,18 +151,18 @@ const GameCard: React.FC<GameCardProps> = ({
       <div className="absolute z-1 top-4 right-4 flex gap-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={() => onEdit(game)}
-          className="w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition-colors"
+          className="w-6 h-6 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 transition-colors backdrop-blur-sm"
         >
           <span className="text-green-500">
-            <Edit className="w-5 h-5" stroke="currentColor" strokeWidth={2} />
+            <Edit className="w-5 h-5" stroke="currentColor" strokeWidth={1} />
           </span>
         </button>
         <button
           onClick={() => onDelete(game.id)}
-          className="w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition-colors"
+          className="w-6 h-6 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 transition-colors backdrop-blur-sm"
         >
           <span className="text-red-500">
-            <Trash className="w-5 h-5" stroke="currentColor" strokeWidth={2} />
+            <Trash className="w-5 h-5" stroke="currentColor" strokeWidth={1} />
           </span>
         </button>
       </div>
