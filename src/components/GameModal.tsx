@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Game } from "../types/Game";
 import { X, Check, Plus } from "lucide-react";
 import Button from "../components/Button";
+import TagToggle from "../components/TagToggle";
 
 interface GameModalProps {
   isOpen: boolean;
@@ -211,8 +212,20 @@ const GameModal: React.FC<GameModalProps> = ({
 
         {/* Tags */}
         <label className="block mb-2 font-semibold">Tags</label>
-        <div className="mb-6 space-y-1">
-          {availableTags.map((tag) => {
+        <div className="mb-6 flex flex-wrap gap-2">
+          {availableTags.map((tag) => (
+            <TagToggle
+              key={tag}
+              label={tag}
+              selected={selectedTags.includes(tag)}
+              onClick={() => toggleTag(tag)}
+              // className="text-xs px-2"  - if I want to change text size
+            />
+          ))}
+        </div>
+
+        {/* old code, before component/TagToggle.tsx
+        {availableTags.map((tag) => {
             const isSelected = selectedTags.includes(tag); // check if this tag is selected
             return (
               <button
@@ -233,8 +246,7 @@ const GameModal: React.FC<GameModalProps> = ({
                 {tag}
               </button>
             );
-          })}
-        </div>
+          })} </div> */}
 
         {/* Add New Tag */}
         <div className="flex gap-2">
