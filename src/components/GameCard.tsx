@@ -1,7 +1,7 @@
 import React from "react";
 import { Game } from "../types/Game";
 import { Edit, Trash } from "lucide-react";
-import TagBadge from "../components/TagBadge";
+import Tag from "../components/Tag";
 
 interface GameCardProps {
   game: Game;
@@ -24,7 +24,7 @@ const GameCard: React.FC<GameCardProps> = ({
       : zoom === 1
       ? "text-sm"
       : zoom === 2
-      ? "text-m"
+      ? "text-md"
       : zoom === 3
       ? "text-base"
       : "text-lg";
@@ -124,7 +124,26 @@ const GameCard: React.FC<GameCardProps> = ({
       {/* Tags */}
       <div className={`flex flex-wrap gap-2 ${isList ? "items-center" : ""}`}>
         {game.tags.map((tag) => (
-          <TagBadge key={tag} label={tag} zoom={zoom} />
+          <Tag
+            key={tag}
+            label={tag}
+            selected
+            className={`
+            
+              dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600
+        ${
+          zoom === 0
+            ? "text-xs"
+            : zoom === 1
+            ? "text-sm"
+            : zoom === 2
+            ? "text-md"
+            : zoom === 3
+            ? "text-lg"
+            : "text-xl"
+        }
+            `}
+          />
         ))}
       </div>
 

@@ -5,6 +5,7 @@ import { Game } from "./types/Game";
 import { games as initialGames } from "./data/games"; // import your data
 import Navbar from "./components/Navbar";
 import { useConfirm } from "./hooks/useConfirm";
+import SearchFilters from "./components/SearchFilters";
 
 const App = () => {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -142,7 +143,7 @@ const App = () => {
           <div
             className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-40 transform transition-transform duration-300
             ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
-  `}
+        `}
           >
             <h2 className="text-xl font-semibold mb-4">Menu</h2>
             <ul className="space-y-3">
@@ -161,85 +162,19 @@ const App = () => {
             className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
           />
         )}
-        <div className="flex-1 w-full max-w-6xl mx-auto flex flex-col gap-4">
-          {/* Adjust pt-16 to match navbar height */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            {/* Search bar */}
-            <input
-              type="text"
-              placeholder="Search games..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded bg-white
-    dark:bg-gray-800
-    text-gray-900
-    dark:text-gray-100 w-full sm:w-1/2 focus:outline-none
-    focus:ring-2
-    focus:ring-teal-400
-    focus:border-teal-400"
-            />
-            {/* Status filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="
-    block
-    w-full
-    sm:w-1/4
-    px-3
-    py-2
-    border
-    border-gray-300
-    rounded
-    bg-white
-    dark:bg-gray-800
-    text-gray-900
-    dark:text-gray-100
-    focus:outline-none
-    focus:ring-2
-    focus:ring-teal-400
-    focus:border-teal-400
-  "
-            >
-              <option value="all">All statuses</option>
-              <option value="finished">Finished</option>
-              <option value="backlog">Backlog</option>
-              <option value="replay">Replay</option>
-              <option value="abandoned">Abandoned</option>
-              <option value="suspended">Suspended</option>
-              <option value="wishlist">Wishlist</option>
-            </select>
-            {/* Search tag */}
-            <select
-              value={tagFilter}
-              onChange={(e) => setTagFilter(e.target.value)}
-              className="
-    block
-    w-full
-    sm:w-1/4
-    px-3
-    py-2
-    border
-    border-gray-300
-    rounded
-    bg-white
-    dark:bg-gray-800
-    text-gray-900
-    dark:text-gray-100
-    focus:outline-none
-    focus:ring-2
-    focus:ring-teal-400
-    focus:border-teal-400
-  "
-            >
-              <option value="all">All tags</option>
-              {allTags.map((tag) => (
-                <option key={tag} value={tag}>
-                  {tag}
-                </option>
-              ))}
-            </select>
-          </div>
+
+        {/* Search and Filters */}
+        <div className="sticky top-12 z-40 bg-white dark:bg-gray-800 w-full px-4 py-2">
+          <SearchFilters
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            tagFilter={tagFilter}
+            setTagFilter={setTagFilter}
+            allTags={allTags}
+          />
+
           <GameList
             games={filteredGames}
             onEdit={handleEdit}

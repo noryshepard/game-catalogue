@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Game } from "../types/Game";
 import { X, Check, Plus } from "lucide-react";
 import Button from "../components/Button";
-import TagToggle from "../components/TagToggle";
+import Tag from "../components/Tag";
 
 interface GameModalProps {
   isOpen: boolean;
@@ -214,7 +214,7 @@ const GameModal: React.FC<GameModalProps> = ({
         <label className="block mb-2 font-semibold">Tags</label>
         <div className="mb-6 flex flex-wrap gap-2">
           {availableTags.map((tag) => (
-            <TagToggle
+            <Tag
               key={tag}
               label={tag}
               selected={selectedTags.includes(tag)}
