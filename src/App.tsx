@@ -5,7 +5,6 @@ import { Game } from "./types/Game";
 import { games as initialGames } from "./data/games"; // import your data
 import Navbar from "./components/Navbar";
 import { useConfirm } from "./hooks/useConfirm";
-import SearchFilters from "./components/SearchFilters";
 
 const App = () => {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -136,6 +135,13 @@ const App = () => {
         zoomOut={zoomOut}
         onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
         onAddNew={handleAddNew}
+        searchQuery={searchQuery} // search & filters stuff
+        setSearchQuery={setSearchQuery}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        tagFilter={tagFilter}
+        setTagFilter={setTagFilter}
+        allTags={allTags}
       />
       <div className="flex-1 min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors flex flex-col p-4">
         {/* Slide-out menu on the right */}
@@ -163,36 +169,23 @@ const App = () => {
           />
         )}
 
-        {/* Search and Filters */}
-        <div className="sticky top-12 z-40 bg-white dark:bg-gray-800 w-full px-4 py-2">
-          <SearchFilters
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            tagFilter={tagFilter}
-            setTagFilter={setTagFilter}
-            allTags={allTags}
-          />
+        <GameList
+          games={filteredGames}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          zoom={cardZoom}
+          viewMode={viewMode}
+        />
+        <ConfirmDialog />
 
-          <GameList
-            games={filteredGames}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            zoom={cardZoom}
-            viewMode={viewMode}
-          />
-          <ConfirmDialog />
-
-          <GameModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSave={handleSave}
-            gameToEdit={gameToEdit}
-            availableTags={availableTags}
-            addNewTag={addNewTag}
-          />
-        </div>
+        <GameModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSave}
+          gameToEdit={gameToEdit}
+          availableTags={availableTags}
+          addNewTag={addNewTag}
+        />
       </div>
     </>
   );
