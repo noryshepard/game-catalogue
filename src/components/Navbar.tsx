@@ -9,9 +9,11 @@ import {
   List,
   Plus,
   RotateCcw,
+  Filter,
 } from "lucide-react";
 
 import Button from "../components/Button";
+import { FiltersContent } from "../components/FiltersContent";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -22,6 +24,7 @@ interface NavbarProps {
   onAddNew: () => void;
   viewMode: "grid" | "list";
   onToggleView: () => void;
+  clearFilters: () => void;
 
   // search & filters stuff
   searchQuery: string;
@@ -34,6 +37,10 @@ interface NavbarProps {
   setTagFilter: (value: string) => void;
 
   allTags: string[];
+
+  // mobile filters
+  isFilterOpen: boolean;
+  onFilterToggle: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -53,16 +60,13 @@ const Navbar: React.FC<NavbarProps> = ({
   tagFilter,
   setTagFilter,
   allTags,
+  isFilterOpen,
+  onFilterToggle,
+  clearFilters,
 }) => {
-  const clearFilters = () => {
-    setSearchQuery("");
-    setStatusFilter("all");
-    setTagFilter("all");
-  };
-
   return (
     <>
-      <nav className="sticky top-0 z-50 w-full bg-white dark:bg-gray-800 border-b">
+      <nav className="sticky top-0 z-50 h-25 w-full bg-white dark:bg-gray-800 border-b">
         {/* 🔹 ROW 1 */}
         <div className="flex items-center justify-between px-4 py-2">
           {/* LEFT */}
@@ -147,55 +151,34 @@ const Navbar: React.FC<NavbarProps> = ({
             >
               <Menu size={20} />
             </Button>
-          </div>
-        </div>
 
-        {/* 🔹 BOTTOM ROW: search & filters */}
-        <div className="px-4 pb-2">
-          <div className="flex flex-wrap gap-2 max-w-4xl mx-auto w-full">
-            <input
-              type="text"
-              placeholder="Search games..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 px-3 py-2 border rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-400"
-            />
-
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full sm:w-1/4 px-3 py-2 border rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            >
-              <option value="all">All statuses</option>
-              <option value="finished">Finished</option>
-              <option value="backlog">Backlog</option>
-              <option value="replay">Replay</option>
-              <option value="abandoned">Abandoned</option>
-              <option value="suspended">Suspended</option>
-              <option value="wishlist">Wishlist</option>
-            </select>
-
-            <select
-              value={tagFilter}
-              onChange={(e) => setTagFilter(e.target.value)}
-              className="w-full sm:w-1/4 px-3 py-2 border rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            >
-              <option value="all">All tags</option>
-              {allTags.map((tag) => (
-                <option key={tag} value={tag}>
-                  {tag}
-                </option>
-              ))}
-            </select>
-            {/* Clear Filters Button */}
+            {/* Mobile filter toggle */}
             <Button
               variant="ghost"
               size="sm"
-              onClick={clearFilters}
-              aria-label="Clear search and filters"
+              onClick={onFilterToggle}
+              className="md:hidden"
+              aria-label="Open filters"
             >
-              <RotateCcw className="w-5 h-5 stroke-gray-500 dark:stroke-gray-200" />
+              <Filter size={20} />
             </Button>
+          </div>
+        </div>
+
+        {/* 🔹 BOTTOM ROW: search & filters (desktop) */}
+        {/* 🔹 DESKTOP FILTERS */}
+        <div className="hidden md:block px-4 pb-2">
+          <div className="flex flex-wrap gap-2 max-w-4xl mx-auto w-full">
+            <FiltersContent
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              tagFilter={tagFilter}
+              setTagFilter={setTagFilter}
+              allTags={allTags}
+              clearFilters={clearFilters}
+            />
           </div>
         </div>
       </nav>

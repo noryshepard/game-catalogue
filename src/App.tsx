@@ -5,6 +5,7 @@ import { Game } from "./types/Game";
 import { games as initialGames } from "./data/games"; // import your data
 import Navbar from "./components/Navbar";
 import { useConfirm } from "./hooks/useConfirm";
+import { FiltersContent } from "./components/FiltersContent";
 
 const App = () => {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -94,6 +95,9 @@ const App = () => {
     });
   };
 
+  //Collapsible filter panel
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   //search stuff
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | string>("all");
@@ -112,6 +116,14 @@ const App = () => {
     .filter((game) =>
       tagFilter === "all" ? true : game.tags.includes(tagFilter)
     );
+
+  //clearfilter
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("all");
+    setTagFilter("all");
+  };
 
   //sync html dark class with isDarkMode
   useEffect(() => {
@@ -137,17 +149,20 @@ const App = () => {
         onAddNew={handleAddNew}
         searchQuery={searchQuery} // search & filters stuff
         setSearchQuery={setSearchQuery}
+        isFilterOpen={isFilterOpen}
+        onFilterToggle={() => setIsFilterOpen((v) => !v)}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
         tagFilter={tagFilter}
         setTagFilter={setTagFilter}
         allTags={allTags}
+        clearFilters={clearFilters}
       />
       <div className="flex-1 min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors flex flex-col p-4">
         {/* Slide-out menu on the right */}
         {isMenuOpen && (
           <div
-            className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-40 transform transition-transform duration-300
+            className={`fixed top-25 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-50 transform transition-transform duration-300
             ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
         `}
           >
@@ -167,6 +182,30 @@ const App = () => {
             onClick={() => setIsMenuOpen(false)}
             className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
           />
+        )}
+
+        {isFilterOpen && (
+          <div
+            className="
+      fixed top-16 left-0 w-full
+      bg-white dark:bg-gray-800
+      border-b shadow-md
+      z-40 md:hidden
+    "
+          >
+            <div className="p-4 flex flex-col gap-3">
+              <FiltersContent
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+                tagFilter={tagFilter}
+                setTagFilter={setTagFilter}
+                allTags={allTags}
+                clearFilters={clearFilters}
+              />
+            </div>
+          </div>
         )}
 
         <GameList
