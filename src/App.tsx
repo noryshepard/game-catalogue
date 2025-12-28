@@ -98,6 +98,11 @@ const App = () => {
   //Collapsible filter panel
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+  //console log isFilterOpen changes
+  useEffect(() => {
+    console.log("isFilterOpen changed:", isFilterOpen);
+  }, [isFilterOpen]);
+
   //search stuff
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | string>("all");
@@ -162,11 +167,12 @@ const App = () => {
         {/* Slide-out menu on the right */}
         {isMenuOpen && (
           <div
-            className={`fixed top-25 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-50 transform transition-transform duration-300
+            className={`fixed top-[62px] right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-50 transform transition-transform duration-300 p-4
             ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
         `}
           >
             <h2 className="text-xl font-semibold mb-4">Menu</h2>
+            <div className="border-t border-gray-200 dark:border-gray-700border-t border-gray-200 dark:border-gray-700 max-w-4xl mx-auto mb-4" />
             <ul className="space-y-3">
               <li className="cursor-pointer hover:underline">Add Game</li>
               <li className="cursor-pointer hover:underline">Manage Tags</li>
@@ -187,13 +193,14 @@ const App = () => {
         {isFilterOpen && (
           <div
             className="
-      fixed top-16 left-0 w-full
+      fixed top-[72px] left-0 w-full
       bg-white dark:bg-gray-800
       border-b shadow-md
-      z-40 md:hidden
+      z-40
     "
+            onClick={(e) => e.stopPropagation()} // ✅ stops chevron click from closing when clicking inside
           >
-            <div className="p-4 flex flex-col gap-3">
+            <div className="flex flex-wrap gap-2 max-w-4xl mx-auto w-full p-3">
               <FiltersContent
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}

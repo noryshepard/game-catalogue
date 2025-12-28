@@ -10,6 +10,8 @@ import {
   Plus,
   RotateCcw,
   Filter,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 
 import Button from "../components/Button";
@@ -66,7 +68,7 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   return (
     <>
-      <nav className="sticky top-0 z-50 h-25 w-full bg-white dark:bg-gray-800 border-b">
+      <nav className="sticky top-0 z-50 w-full bg-white dark:bg-gray-800 border-b">
         {/* 🔹 ROW 1 */}
         <div className="flex items-center justify-between px-4 py-2">
           {/* LEFT */}
@@ -164,22 +166,16 @@ const Navbar: React.FC<NavbarProps> = ({
             </Button>
           </div>
         </div>
-
-        {/* 🔹 BOTTOM ROW: search & filters (desktop) */}
-        {/* 🔹 DESKTOP FILTERS */}
-        <div className="hidden md:block px-4 pb-2">
-          <div className="flex flex-wrap gap-2 max-w-4xl mx-auto w-full">
-            <FiltersContent
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              statusFilter={statusFilter}
-              setStatusFilter={setStatusFilter}
-              tagFilter={tagFilter}
-              setTagFilter={setTagFilter}
-              allTags={allTags}
-              clearFilters={clearFilters}
-            />
-          </div>
+        <div className="border-t border-gray-200 dark:border-gray-700" />
+        {/* Desktop filter toggle */}
+        <div className="hidden md:flex justify-center py-1">
+          <button
+            onClick={onFilterToggle}
+            aria-label="Toggle filters"
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-300"
+          >
+            {isFilterOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </button>
         </div>
       </nav>
     </>
