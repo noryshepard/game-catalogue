@@ -174,7 +174,15 @@ const App = () => {
             <h2 className="text-xl font-semibold mb-4">Menu</h2>
             <div className="border-t border-gray-200 dark:border-gray-700border-t border-gray-200 dark:border-gray-700 max-w-4xl mx-auto mb-4" />
             <ul className="space-y-3">
-              <li className="cursor-pointer hover:underline">Add Game</li>
+              <li
+                className="cursor-pointer rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => {
+                  handleAddNew();
+                  setIsMenuOpen(false);
+                }}
+              >
+                Add Game
+              </li>
               <li className="cursor-pointer hover:underline">Manage Tags</li>
               <li className="cursor-pointer hover:underline">Import CSV</li>
               <li className="cursor-pointer hover:underline">Export CSV</li>
