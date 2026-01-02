@@ -2,6 +2,7 @@ import React from "react";
 import { Game } from "../types/Game";
 import { Edit, Trash } from "lucide-react";
 import Tag from "../components/Tag";
+import { sortTags } from "../utils/tags";
 
 interface GameCardProps {
   game: Game;
@@ -123,7 +124,7 @@ const GameCard: React.FC<GameCardProps> = ({
 
       {/* Tags */}
       <div className={`flex flex-wrap gap-2 ${isList ? "items-center" : ""}`}>
-        {game.tags.map((tag) => (
+        {sortTags(game.tags).map((tag) => (
           <Tag
             key={tag}
             label={tag}

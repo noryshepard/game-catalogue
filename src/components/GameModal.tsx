@@ -3,6 +3,7 @@ import { Game } from "../types/Game";
 import { X, Check, Plus } from "lucide-react";
 import Button from "../components/Button";
 import Tag from "../components/Tag";
+import { normalizeTag, sortTags, findExistingTag } from "../utils/tags";
 
 interface GameModalProps {
   isOpen: boolean;
@@ -63,17 +64,28 @@ const GameModal: React.FC<GameModalProps> = ({
   //insert new tag to available tags if not exist
 
   const [newTag, setNewTag] = useState("");
+  const [tagError, setTagError] = useState<string | null>(null);
 
   const handleAddTag = () => {
-    const trimmed = newTag.trim();
-    if (!trimmed) return;
+    const normalized = normalizeTag(newTag);
+    if (!normalized) return;
 
     // ✅ Add to global availableTags
-    addNewTag(trimmed);
+    addNewTag(normalized);
+
+    const existing = findExistingTag(availableTags, normalized);
+
+    if (existing) {
+      setTagError(`Tag already exists as "${existing}"`);
+      return;
+    }
+
+    // Clear error
+    setTagError(null);
 
     // ✅ Add to this game's selected tags
-    if (!selectedTags.includes(trimmed)) {
-      setSelectedTags([...selectedTags, trimmed]);
+    if (!selectedTags.includes(normalized)) {
+      setSelectedTags([...selectedTags, normalized]);
     }
 
     // ✅ Clear input box
@@ -213,40 +225,17 @@ const GameModal: React.FC<GameModalProps> = ({
         {/* Tags */}
         <label className="block mb-2 font-semibold">Tags</label>
         <div className="mb-6 flex flex-wrap gap-2">
-          {availableTags.map((tag) => (
+          {sortTags(availableTags).map((tag) => (
             <Tag
               key={tag}
               label={tag}
               selected={selectedTags.includes(tag)}
               onClick={() => toggleTag(tag)}
-              // className="text-xs px-2"  - if I want to change text size
+              //now sorted using utils-tags
+              //className="text-xs px-2"  - if I want to change text size
             />
           ))}
         </div>
-
-        {/* old code, before component/TagToggle.tsx
-        {availableTags.map((tag) => {
-            const isSelected = selectedTags.includes(tag); // check if this tag is selected
-            return (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => toggleTag(tag)} // toggle selection
-                className={`px-3 py-1 rounded-full border font-semibold text-sm transition-colors ${
-                  selectedTags.includes(tag)
-                    ? "text-black border-black" // text and border controlled
-                    : "bg-gray-200 dark:bg-gray-900 text-gray-200 dark:text-gray-200 border-gray-200 dark:border-gray-100" // unselected tags
-                }`}
-                style={{
-                  backgroundColor: selectedTags.includes(tag)
-                    ? "#7FFFD4"
-                    : undefined, // aquamarine
-                }}
-              >
-                {tag}
-              </button>
-            );
-          })} </div> */}
 
         {/* Add New Tag */}
         <div className="flex gap-2">
@@ -270,6 +259,7 @@ const GameModal: React.FC<GameModalProps> = ({
               strokeWidth={3}
             />
           </Button>
+          {tagError && <p className="mt-1 text-sm text-red-500">{tagError}</p>}
         </div>
 
         {/* Cancel & Save Buttons */}
