@@ -3,7 +3,7 @@ import { Game } from "../types/Game";
 import { X, Check, Plus } from "lucide-react";
 import Button from "../components/Button";
 import Tag from "../components/Tag";
-import { normalizeTag, sortTags, findExistingTag } from "../utils/tags";
+import { addTag, normalizeTag, findExistingTag, sortTags } from "../utils/tags";
 
 interface GameModalProps {
   isOpen: boolean;
@@ -29,6 +29,8 @@ const GameModal: React.FC<GameModalProps> = ({
   const [completedDate, setCompletedDate] = useState<Date | null>(null);
   const [releaseDate, setReleaseDate] = useState<Date | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const [newTag, setNewTag] = useState("");
+  const [tagError, setTagError] = useState<string | null>(null);
 
   // Initialize modal state when editing or opening new
   useEffect(() => {
@@ -61,35 +63,24 @@ const GameModal: React.FC<GameModalProps> = ({
     );
   };
 
-  //insert new tag to available tags if not exist
-
-  const [newTag, setNewTag] = useState("");
-  const [tagError, setTagError] = useState<string | null>(null);
-
   const handleAddTag = () => {
-    const normalized = normalizeTag(newTag);
-    if (!normalized) return;
+    const result = addTag(availableTags, newTag);
 
-    // ✅ Add to global availableTags
-    addNewTag(normalized);
-
-    const existing = findExistingTag(availableTags, normalized);
-
-    if (existing) {
-      setTagError(`Tag already exists as "${existing}"`);
+    if (result.message) {
+      // Show duplicate error
+      setTagError(result.message);
       return;
     }
 
-    // Clear error
-    setTagError(null);
+    // ✅ Add new tag globally
+    addNewTag(normalizeTag(newTag));
 
     // ✅ Add to this game's selected tags
-    if (!selectedTags.includes(normalized)) {
-      setSelectedTags([...selectedTags, normalized]);
-    }
+    setSelectedTags(sortTags([...selectedTags, normalizeTag(newTag)]));
 
-    // ✅ Clear input box
+    // ✅ Clear input
     setNewTag("");
+    setTagError(null);
   };
 
   // Close modal on Escape key
@@ -238,17 +229,18 @@ const GameModal: React.FC<GameModalProps> = ({
         </div>
 
         {/* Add New Tag */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <input
             type="text"
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             placeholder="Add new tag..."
             className="flex-1 rounded px-3 py-1 bg-gray-200 dark:bg-gray-900 text-black dark:text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            aria-label="New tag name"
           />
 
           <Button
-            type="button" // to prevent submitting the form
+            type="button"
             variant="ghost"
             size="sm"
             onClick={handleAddTag}
@@ -259,8 +251,13 @@ const GameModal: React.FC<GameModalProps> = ({
               strokeWidth={3}
             />
           </Button>
-          {tagError && <p className="mt-1 text-sm text-red-500">{tagError}</p>}
         </div>
+
+        {tagError && (
+          <p className="text-sm text-red-500 mt-1" role="alert">
+            {tagError}
+          </p>
+        )}
 
         {/* Cancel & Save Buttons */}
         <div className="mt-6 flex justify-end gap-3">

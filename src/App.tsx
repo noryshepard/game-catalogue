@@ -6,6 +6,7 @@ import { games as initialGames } from "./data/games"; // import your data
 import Navbar from "./components/Navbar";
 import { useConfirm } from "./hooks/useConfirm";
 import { FiltersContent } from "./components/FiltersContent";
+import ManageTagsModal from "./components/ManageTagsModal";
 
 const App = () => {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -69,6 +70,10 @@ const App = () => {
     setIsModalOpen(true);
   };
 
+  // Open Modal for Managing Tags
+
+  const [isManageTagsModalOpen, setIsManageTagsModalOpen] = useState(false);
+
   // Delete game from list
 
   const handleDelete = async (gameId: number) => {
@@ -130,6 +135,18 @@ const App = () => {
     setTagFilter("all");
   };
 
+  // Deletes tag globally and from games
+  const handleDeleteTag = (tagToDelete: string) => {
+    setAvailableTags((prev) => prev.filter((tag) => tag !== tagToDelete));
+
+    setGames((prevGames) =>
+      prevGames.map((game) => ({
+        ...game,
+        tags: game.tags.filter((t) => t !== tagToDelete),
+      }))
+    );
+  };
+
   //sync html dark class with isDarkMode
   useEffect(() => {
     if (isDarkMode) {
@@ -183,7 +200,16 @@ const App = () => {
               >
                 Add Game
               </li>
-              <li className="cursor-pointer hover:underline">Manage Tags</li>
+              <li
+                className="cursor-pointer rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => {
+                  setIsManageTagsModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+              >
+                Manage Tags
+              </li>
+
               <li className="cursor-pointer hover:underline">Import CSV</li>
               <li className="cursor-pointer hover:underline">Export CSV</li>
               <li className="cursor-pointer hover:underline">About</li>
@@ -239,6 +265,13 @@ const App = () => {
           gameToEdit={gameToEdit}
           availableTags={availableTags}
           addNewTag={addNewTag}
+        />
+        <ManageTagsModal
+          isOpen={isManageTagsModalOpen}
+          onClose={() => setIsManageTagsModalOpen(false)}
+          tags={availableTags}
+          onAddTag={(tag) => setAvailableTags((prev) => [...prev, tag])}
+          onDeleteTag={handleDeleteTag}
         />
       </div>
     </>
