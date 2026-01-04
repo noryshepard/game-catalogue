@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import { useConfirm } from "./hooks/useConfirm";
 import { FiltersContent } from "./components/FiltersContent";
 import ManageTagsModal from "./components/ManageTagsModal";
+import { renameTag } from "./utils/tags";
 
 const App = () => {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -133,6 +134,19 @@ const App = () => {
     setSearchQuery("");
     setStatusFilter("all");
     setTagFilter("all");
+  };
+
+  // Renames tag globally and in games
+
+  const handleRenameTag = (oldTag: string, newTag: string): string | null => {
+    const result = renameTag(availableTags, oldTag, newTag);
+
+    if (result.message) {
+      return result.message; // let modal show error
+    }
+
+    setAvailableTags(result.tags);
+    return null;
   };
 
   // Deletes tag globally and from games
@@ -271,6 +285,7 @@ const App = () => {
           onClose={() => setIsManageTagsModalOpen(false)}
           tags={availableTags}
           onAddTag={(tag) => setAvailableTags((prev) => [...prev, tag])}
+          onRenameTag={handleRenameTag}
           onDeleteTag={handleDeleteTag}
         />
       </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "../components/Button";
 import Tag from "../components/Tag";
-import { normalizeTag, findExistingTag } from "../utils/tags";
+import { normalizeTag, findExistingTag, renameTag } from "../utils/tags";
 import { Edit, Trash, Plus } from "lucide-react";
 
 interface ManageTagsModalProps {
@@ -10,6 +10,7 @@ interface ManageTagsModalProps {
   tags: string[];
   onAddTag: (tag: string) => void;
   onDeleteTag: (tag: string) => void;
+  onRenameTag: (oldTag: string, newTag: string) => string | null;
 }
 
 const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
@@ -17,6 +18,7 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
   onClose,
   tags,
   onAddTag,
+  onRenameTag,
   onDeleteTag,
 }) => {
   if (!isOpen) return null;
@@ -48,6 +50,12 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
   const [tagError, setTagError] = useState<string | null>(null);
 
   const [tagToDelete, setTagToDelete] = useState<string | null>(null);
+
+  //rename tag state
+
+  const [editingTag, setEditingTag] = useState<string | null>(null);
+  const [editedTag, setEditedTag] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   // Close modal on Escape key
   useEffect(() => {
@@ -105,26 +113,77 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
         <ul className="space-y-2">
           {sortedTags.map((tag) => (
             <li key={tag} className="flex items-center justify-between gap-2">
-              <Tag label={tag} />
+              {editingTag === tag ? (
+                /* 📝 EDIT MODE */
+                <div className="flex items-center gap-2 w-full">
+                  <input
+                    value={editedTag}
+                    onChange={(e) => setEditedTag(e.target.value)}
+                    className="flex-1 rounded px-2 py-1 text-sm dark:bg-gray-700"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        const message = onRenameTag(tag, editedTag);
+                        if (!message) setEditingTag(null);
+                      }
+                      if (e.key === "Escape") {
+                        setEditingTag(null);
+                        setError(null);
+                      }
+                    }}
+                  />
 
-              <div className="flex gap-2">
-                <button
-                  className="p-1 hover:bg-blue-200 dark:hover:bg-gray-700 rounded"
-                  aria-label={`Rename tag ${tag}`}
-                  onClick={() => {
-                    /* TODO: your rename logic here */
-                  }}
-                >
-                  <Edit size={16} className="text-blue-500" />
-                </button>
-                <button
-                  className="p-1 hover:bg-red-200 dark:hover:bg-gray-700 rounded"
-                  aria-label={`Delete tag ${tag}`}
-                  onClick={() => setTagToDelete(tag)} // opens confirmation dialog
-                >
-                  <Trash size={16} className="text-red-500" />
-                </button>
-              </div>
+                  <button
+                    className="text-sm text-blue-500"
+                    onClick={() => {
+                      const message = onRenameTag(tag, editedTag);
+                      if (message) {
+                        setError(message);
+                        return;
+                      }
+                      setEditingTag(null);
+                    }}
+                  >
+                    Save
+                  </button>
+
+                  <button
+                    className="text-sm text-gray-500"
+                    onClick={() => {
+                      setEditingTag(null);
+                      setError(null);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                /* 👀 VIEW MODE */
+                <>
+                  <Tag label={tag} />
+
+                  <div className="flex gap-2">
+                    <button
+                      className="p-1 hover:bg-blue-200 dark:hover:bg-gray-700 rounded"
+                      aria-label={`Rename tag ${tag}`}
+                      onClick={() => {
+                        setEditingTag(tag);
+                        setEditedTag(tag);
+                        setError(null);
+                      }}
+                    >
+                      <Edit size={16} className="text-blue-500" />
+                    </button>
+                    <button
+                      className="p-1 hover:bg-red-200 dark:hover:bg-gray-700 rounded"
+                      aria-label={`Delete tag ${tag}`}
+                      onClick={() => setTagToDelete(tag)} // opens confirmation dialog
+                    >
+                      <Trash size={16} className="text-red-500" />
+                    </button>
+                  </div>
+                </>
+              )}
             </li>
           ))}
         </ul>

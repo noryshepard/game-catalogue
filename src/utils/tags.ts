@@ -1,3 +1,6 @@
+import { Game } from "../types/Game";
+
+
 export const normalizeTag = (tag: string) => tag.trim();
 
 
@@ -47,6 +50,23 @@ export const renameTag = (
     tags: tags.map((t) => (t === oldTag ? normalized : t)),
   };
 };
+
+//rename tags in games
+
+export const renameTagInGames = (
+  games: Game[],
+  oldTag: string,
+  newTag: string
+): Game[] => {
+  return games.map((game) => ({
+    ...game,
+    tags: game.tags.map((tag) =>
+      tag === oldTag ? newTag : tag
+    ),
+  }));
+};
+
+
 
 /**
  * Delete a tag
