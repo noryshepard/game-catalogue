@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import GameList from "./components/GameList";
 import GameModal from "./components/GameModal";
 import { Game } from "./types/Game";
@@ -144,8 +144,17 @@ const App = () => {
     if (result.message) {
       return result.message; // let modal show error
     }
-
+    //Updates global tags
     setAvailableTags(result.tags);
+
+    // Updates all games that had the old tag
+    setGames((prevGames) =>
+      prevGames.map((game) => ({
+        ...game,
+        tags: game.tags.map((t) => (t === oldTag ? newTag : t)),
+      }))
+    );
+
     return null;
   };
 
@@ -284,6 +293,7 @@ const App = () => {
           isOpen={isManageTagsModalOpen}
           onClose={() => setIsManageTagsModalOpen(false)}
           tags={availableTags}
+          games={games}
           onAddTag={(tag) => setAvailableTags((prev) => [...prev, tag])}
           onRenameTag={handleRenameTag}
           onDeleteTag={handleDeleteTag}

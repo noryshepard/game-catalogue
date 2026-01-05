@@ -7,6 +7,9 @@ export const normalizeTag = (tag: string) => tag.trim();
 export const sortTags = (tags: string[]) =>
   [...tags].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
 
+export const getGamesUsingTag = (games: Game[], tag: string): Game[] =>
+  games.filter((game) => game.tags?.includes(tag));
+
 
 export const findExistingTag = (
   tags: string[],
@@ -14,6 +17,9 @@ export const findExistingTag = (
 ): string | null => {
   const normalized = candidate.trim().toLowerCase();
   if (!normalized) return null;
+
+
+  
 
 
   return tags.find((tag) => tag.toLowerCase() === normalized) ?? null;

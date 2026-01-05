@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import Button from "../components/Button";
 import Tag from "../components/Tag";
-import { normalizeTag, findExistingTag, renameTag } from "../utils/tags";
+import {
+  normalizeTag,
+  findExistingTag,
+  renameTag,
+  getGamesUsingTag,
+} from "../utils/tags";
 import { Edit, Trash, Plus } from "lucide-react";
+import { Game } from "../types/Game";
 
 interface ManageTagsModalProps {
   isOpen: boolean;
   onClose: () => void;
   tags: string[];
+  games: Game[];
   onAddTag: (tag: string) => void;
   onDeleteTag: (tag: string) => void;
   onRenameTag: (oldTag: string, newTag: string) => string | null;
@@ -17,6 +24,7 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
   isOpen,
   onClose,
   tags,
+  games,
   onAddTag,
   onRenameTag,
   onDeleteTag,
@@ -48,8 +56,11 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
 
   const [newTag, setNewTag] = useState("");
   const [tagError, setTagError] = useState<string | null>(null);
+  const [showRenameWarning, setShowRenameWarning] = useState(false);
 
   const [tagToDelete, setTagToDelete] = useState<string | null>(null);
+
+  const [hoveredTag, setHoveredTag] = useState<string | null>(null);
 
   //rename tag state
 
@@ -111,81 +122,141 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
         {tagError && <p className="text-sm text-red-500 mt-1">{tagError}</p>}
 
         <ul className="space-y-2">
-          {sortedTags.map((tag) => (
-            <li key={tag} className="flex items-center justify-between gap-2">
-              {editingTag === tag ? (
-                /* 📝 EDIT MODE */
-                <div className="flex items-center gap-2 w-full">
-                  <input
-                    value={editedTag}
-                    onChange={(e) => setEditedTag(e.target.value)}
-                    className="flex-1 rounded px-2 py-1 text-sm dark:bg-gray-700"
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        const message = onRenameTag(tag, editedTag);
-                        if (!message) setEditingTag(null);
-                      }
-                      if (e.key === "Escape") {
-                        setEditingTag(null);
-                        setError(null);
-                      }
-                    }}
-                  />
+          {sortedTags.map((tag) => {
+            const gamesUsingTag = getGamesUsingTag(games, tag);
+            const usageCount = gamesUsingTag.length;
 
-                  <button
-                    className="text-sm text-blue-500"
-                    onClick={() => {
-                      const message = onRenameTag(tag, editedTag);
-                      if (message) {
-                        setError(message);
-                        return;
-                      }
-                      setEditingTag(null);
-                    }}
-                  >
-                    Save
-                  </button>
+            return (
+              <li
+                key={tag}
+                className="relative flex items-center justify-between gap-2"
+              >
+                {editingTag === tag ? (
+                  /* 📝 EDIT MODE */
+                  <div className="flex items-center gap-2 w-full">
+                    <input
+                      value={editedTag}
+                      onChange={(e) => setEditedTag(e.target.value)}
+                      className="flex-1 rounded px-2 py-1 text-sm dark:bg-gray-700"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          const message = onRenameTag(tag, editedTag);
+                          if (!message) setEditingTag(null);
+                        }
+                        if (e.key === "Escape") {
+                          setEditingTag(null);
+                          setError(null);
+                        }
+                      }}
+                    />
 
-                  <button
-                    className="text-sm text-gray-500"
-                    onClick={() => {
-                      setEditingTag(null);
-                      setError(null);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                /* 👀 VIEW MODE */
-                <>
-                  <Tag label={tag} />
-
-                  <div className="flex gap-2">
                     <button
-                      className="p-1 hover:bg-blue-200 dark:hover:bg-gray-700 rounded"
-                      aria-label={`Rename tag ${tag}`}
+                      className="text-sm text-blue-500"
                       onClick={() => {
-                        setEditingTag(tag);
-                        setEditedTag(tag);
+                        // Show warning first
+                        setShowRenameWarning(true);
+                        const message = onRenameTag(tag, editedTag);
+                        if (message) {
+                          setError(message);
+                          return;
+                        }
+                        setEditingTag(null);
+                      }}
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      className="text-sm text-gray-500"
+                      onClick={() => {
+                        setEditingTag(null);
                         setError(null);
                       }}
                     >
-                      <Edit size={16} className="text-blue-500" />
-                    </button>
-                    <button
-                      className="p-1 hover:bg-red-200 dark:hover:bg-gray-700 rounded"
-                      aria-label={`Delete tag ${tag}`}
-                      onClick={() => setTagToDelete(tag)} // opens confirmation dialog
-                    >
-                      <Trash size={16} className="text-red-500" />
+                      Cancel
                     </button>
                   </div>
-                </>
-              )}
-            </li>
-          ))}
+                ) : (
+                  /* 👀 VIEW MODE, left: tag + usage */
+                  <>
+                    <div className="relative flex items-center justify-between gap-2">
+                      <Tag label={tag} />
+                      {/* Usage count */}
+                      {usageCount > 0 && (
+                        <span
+                          className="text-xs text-gray-500 cursor-help"
+                          onMouseEnter={() => setHoveredTag(tag)}
+                          onMouseLeave={() => setHoveredTag(null)}
+                          onFocus={() => setHoveredTag(tag)}
+                          onBlur={() => setHoveredTag(null)}
+                          tabIndex={0}
+                          aria-label={`${usageCount} games use tag ${tag}`}
+                        >
+                          ({usageCount})
+                        </span>
+                      )}
+                    </div>
+                    {/* RIGHT: save/delete buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        className="p-1 hover:bg-blue-200 dark:hover:bg-gray-700 rounded"
+                        aria-label={`Rename tag ${tag}`}
+                        onClick={() => {
+                          setEditingTag(tag);
+                          setEditedTag(tag);
+                          setError(null);
+                        }}
+                      >
+                        <Edit size={16} className="text-blue-500" />
+                      </button>
+                      <button
+                        className="p-1 hover:bg-red-200 dark:hover:bg-gray-700 rounded"
+                        aria-label={`Delete tag ${tag}`}
+                        onClick={() => setTagToDelete(tag)} // opens confirmation dialog
+                      >
+                        <Trash size={16} className="text-red-500" />
+                      </button>
+                    </div>
+                  </>
+                )}
+                {/* 🔹 POPOVER */}
+                {hoveredTag === tag && usageCount > 0 && (
+                  <div
+                    role="tooltip"
+                    className="
+            absolute
+            top-full
+            left-0
+            mt-1
+            z-50
+            w-56
+            rounded-md
+            bg-white
+            dark:bg-gray-900
+            border
+            border-gray-200
+            dark:border-gray-700
+            shadow-lg
+            p-2
+            text-xs
+          "
+                  >
+                    <p className="font-semibold mb-1 text-gray-700 dark:text-gray-200">
+                      Used in:
+                    </p>
+                    <ul className="space-y-1">
+                      {gamesUsingTag.map((game) => (
+                        <li key={game.id} className="truncate">
+                          • {game.title}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
 
         <div className="mt-6 flex justify-end gap-3">
@@ -199,6 +270,34 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
           </Button>
         </div>
       </div>
+
+      {/* 🟨 RENAMING WARNING DIALOG */}
+      {showRenameWarning && editingTag && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-3 text-red-600">Warning</h3>
+            <p className="mb-4 text-sm">
+              Renaming <strong>{editingTag}</strong> will update all games that
+              use this tag.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setShowRenameWarning(false)}>
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const message = onRenameTag(editingTag, editedTag);
+                  if (!message) setEditingTag(null);
+                  setShowRenameWarning(false);
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 🔥 CONFIRM DELETE DIALOG */}
       {tagToDelete && (
         <div
