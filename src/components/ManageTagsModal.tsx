@@ -180,12 +180,20 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
                 ) : (
                   /* 👀 VIEW MODE, left: tag + usage */
                   <>
-                    <div className="relative flex items-center justify-between gap-2">
-                      <Tag label={tag} />
-                      {/* Usage count */}
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-200 dark:bg-gray-700 border text-sm font-semibold">
+                      <span>{tag}</span>
+
                       {usageCount > 0 && (
                         <span
-                          className="text-xs text-gray-500 cursor-help"
+                          className="
+      inline-flex items-center justify-center
+      w-5 h-5
+      rounded-full
+      bg-gray-300 dark:bg-gray-100
+      text-gray-900
+      text-xs font-bold
+      cursor-help
+    "
                           onMouseEnter={() => setHoveredTag(tag)}
                           onMouseLeave={() => setHoveredTag(null)}
                           onFocus={() => setHoveredTag(tag)}
@@ -193,7 +201,7 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
                           tabIndex={0}
                           aria-label={`${usageCount} games use tag ${tag}`}
                         >
-                          ({usageCount})
+                          {usageCount}
                         </span>
                       )}
                     </div>
@@ -225,22 +233,15 @@ const ManageTagsModal: React.FC<ManageTagsModalProps> = ({
                   <div
                     role="tooltip"
                     className="
-            absolute
-            top-full
-            left-0
-            mt-1
-            z-50
-            w-56
-            rounded-md
-            bg-white
-            dark:bg-gray-900
-            border
-            border-gray-200
-            dark:border-gray-700
-            shadow-lg
-            p-2
-            text-xs
-          "
+         absolute top-full left-1/2 -translate-x-1/2 mt-2
+      w-48
+      rounded-lg
+      bg-white dark:bg-gray-800
+      border border-gray-200 dark:border-gray-700
+      shadow-lg
+      p-2
+      text-xs
+      z-50"
                   >
                     <p className="font-semibold mb-1 text-gray-700 dark:text-gray-200">
                       Used in:
