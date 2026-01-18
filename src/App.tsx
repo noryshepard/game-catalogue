@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import GameList from "./components/GameList";
 import GameModal from "./components/GameModal";
 import { Game } from "./types/Game";
@@ -8,6 +8,8 @@ import { useConfirm } from "./hooks/useConfirm";
 import { FiltersContent } from "./components/FiltersContent";
 import ManageTagsModal from "./components/ManageTagsModal";
 import { renameTag } from "./utils/tags";
+import Papa from "papaparse";
+import { csvRowToGame } from "./utils/importCsv";
 
 const App = () => {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -35,7 +37,7 @@ const App = () => {
   //navbar menu
   const [isDarkMode, setIsDarkMode] = useState(
     localStorage.getItem("theme") === "dark" ||
-      window.matchMedia("(prefers-color-scheme: dark)").matches
+      window.matchMedia("(prefers-color-scheme: dark)").matches,
   );
   const [cardZoom, setCardZoom] = useState(1);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -118,14 +120,14 @@ const App = () => {
 
   const filteredGames = games
     .filter((game) =>
-      game.title.toLowerCase().includes(searchQuery.toLowerCase())
+      game.title.toLowerCase().includes(searchQuery.toLowerCase()),
     )
     .filter((game) =>
-      statusFilter === "all" ? true : game.status === statusFilter
+      statusFilter === "all" ? true : game.status === statusFilter,
     )
 
     .filter((game) =>
-      tagFilter === "all" ? true : game.tags.includes(tagFilter)
+      tagFilter === "all" ? true : game.tags.includes(tagFilter),
     );
 
   //clearfilter
@@ -152,7 +154,7 @@ const App = () => {
       prevGames.map((game) => ({
         ...game,
         tags: game.tags.map((t) => (t === oldTag ? newTag : t)),
-      }))
+      })),
     );
 
     return null;
@@ -166,7 +168,7 @@ const App = () => {
       prevGames.map((game) => ({
         ...game,
         tags: game.tags.filter((t) => t !== tagToDelete),
-      }))
+      })),
     );
   };
 
@@ -180,6 +182,53 @@ const App = () => {
       localStorage.removeItem("theme");
     }
   }, [isDarkMode]);
+
+  //import CSV
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    Papa.parse<Record<string, string>>(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const importedGames = results.data.map((row, i) =>
+          csvRowToGame(row, games.length + i + 1),
+        );
+        setGames((prev) => [...prev, ...importedGames]);
+      },
+    });
+
+    // Reset input to allow same file to be selected again
+    e.target.value = "";
+  };
+
+  // CSV import handler
+  const handleCSVImport = (file: File) => {
+    Papa.parse<Record<string, string>>(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        // Map CSV rows to Game objects
+        const importedGames: Game[] = results.data.map((row, i) => {
+          // nextId is current games length + index + 1
+          const nextId = games.length + i + 1;
+          const game = csvRowToGame(row, nextId);
+
+          // Remove completedDate if you don't want added_on affecting it
+          return { ...game, completedDate: null };
+        });
+
+        // Merge into existing games state
+        setGames((prev) => [...prev, ...importedGames]);
+      },
+    });
+  };
 
   return (
     <>
@@ -233,7 +282,24 @@ const App = () => {
                 Manage Tags
               </li>
 
-              <li className="cursor-pointer hover:underline">Import CSV</li>
+              <li
+                className="cursor-pointer rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => {
+                  handleImportClick(); // triggers csv file input
+                  setIsMenuOpen(false);
+                }}
+              >
+                Import CSV
+              </li>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                className="hidden"
+                onChange={handleFileSelected}
+              />
+
               <li className="cursor-pointer hover:underline">Export CSV</li>
               <li className="cursor-pointer hover:underline">About</li>
             </ul>
