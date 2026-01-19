@@ -172,6 +172,48 @@ const App = () => {
     );
   };
 
+  // CSV import handler
+  const handleCSVImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    Papa.parse<Record<string, string>>(file, {
+      header: true,
+      skipEmptyLines: true,
+      delimiter: ",", // force comma separation
+      quoteChar: '"', // standard quoting
+      transformHeader: (h) => h.replace(/^"|"$/g, ""), // remove leading/trailing quotes
+      transform: (v) => v.replace(/^"|"$/g, ""), // remove quotes around values
+      complete: (results) => {
+        console.log("Parsed rows:", results.data[0]);
+        console.log("All keys:", Object.keys(results.data[0]));
+
+        setGames((prev) => {
+          const importedGames = results.data
+            .map((row, i) => csvRowToGame(row, prev.length + i + 1))
+            .filter((g): g is Game => Boolean(g))
+            .map((g) => ({ ...g, completedDate: null }));
+
+          return [...prev, ...importedGames];
+        });
+      },
+    });
+    e.target.value = "";
+  };
+  //import CSV
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  <input
+    ref={fileInputRef}
+    type="file"
+    accept=".csv"
+    style={{ display: "none" }}
+    onChange={(e) => {
+      console.log("onChange fired");
+      handleCSVImport(e);
+    }}
+  />;
+
   //sync html dark class with isDarkMode
   useEffect(() => {
     if (isDarkMode) {
@@ -183,8 +225,6 @@ const App = () => {
     }
   }, [isDarkMode]);
 
-  //import CSV
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
@@ -206,28 +246,6 @@ const App = () => {
 
     // Reset input to allow same file to be selected again
     e.target.value = "";
-  };
-
-  // CSV import handler
-  const handleCSVImport = (file: File) => {
-    Papa.parse<Record<string, string>>(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        // Map CSV rows to Game objects
-        const importedGames: Game[] = results.data.map((row, i) => {
-          // nextId is current games length + index + 1
-          const nextId = games.length + i + 1;
-          const game = csvRowToGame(row, nextId);
-
-          // Remove completedDate if you don't want added_on affecting it
-          return { ...game, completedDate: null };
-        });
-
-        // Merge into existing games state
-        setGames((prev) => [...prev, ...importedGames]);
-      },
-    });
   };
 
   return (
@@ -285,20 +303,13 @@ const App = () => {
               <li
                 className="cursor-pointer rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
                 onClick={() => {
+                  console.log("Import CSV clicked");
                   handleImportClick(); // triggers csv file input
                   setIsMenuOpen(false);
                 }}
               >
                 Import CSV
               </li>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                className="hidden"
-                onChange={handleFileSelected}
-              />
 
               <li className="cursor-pointer hover:underline">Export CSV</li>
               <li className="cursor-pointer hover:underline">About</li>
@@ -365,6 +376,14 @@ const App = () => {
           onDeleteTag={handleDeleteTag}
         />
       </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv"
+        className="hidden"
+        onChange={handleCSVImport}
+      />
     </>
   );
 };
