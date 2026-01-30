@@ -10,6 +10,8 @@ import ManageTagsModal from "./components/ManageTagsModal";
 import { renameTag } from "./utils/tags";
 import Papa from "papaparse";
 import { csvRowToGame } from "./utils/importCsv";
+import { useCsvImport } from "./features/csvImport/useCsvImport";
+import CsvImportModal from "./features/csvImport/CsvImportModal";
 
 const App = () => {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -172,47 +174,103 @@ const App = () => {
     );
   };
 
+  // brand new CSV import logic
+
+  const csvImport = useCsvImport();
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+
+  // CSV cleaner
+  const [csvPreview, setCsvPreview] = useState<Record<string, string>[]>([]);
+  const [csvErrors, setCsvErrors] = useState<string[]>([]);
+
+  const normalizeCSVHeaders = (csv: string) => {
+    const lines = csv.split(/\r?\n/);
+    if (!lines.length) return csv;
+
+    const headerLine = lines[0];
+
+    const headers = headerLine
+      .split(",")
+      .map(
+        (h) =>
+          h
+            .trim()
+            .replace(/^"+|"+$/g, "") // remove outer quotes
+            .replace(/"+/g, ""), // remove any remaining quotes
+      )
+      .filter(Boolean);
+
+    const fixedHeader = headers.map((h) => `"${h}"`).join(",");
+
+    return [fixedHeader, ...lines.slice(1)].join("\n");
+  };
+
   // CSV import handler
   const handleCSVImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    Papa.parse<Record<string, string>>(file, {
-      header: true,
-      skipEmptyLines: true,
-      delimiter: ",", // force comma separation
-      quoteChar: '"', // standard quoting
-      transformHeader: (h) => h.replace(/^"|"$/g, ""), // remove leading/trailing quotes
-      transform: (v) => v.replace(/^"|"$/g, ""), // remove quotes around values
-      complete: (results) => {
-        console.log("Parsed rows:", results.data[0]);
-        console.log("All keys:", Object.keys(results.data[0]));
+    const reader = new FileReader();
 
-        setGames((prev) => {
-          const importedGames = results.data
-            .map((row, i) => csvRowToGame(row, prev.length + i + 1))
-            .filter((g): g is Game => Boolean(g))
-            .map((g) => ({ ...g, completedDate: null }));
+    reader.onload = () => {
+      const rawCSV = reader.result as string;
+      const cleanCSV = normalizeCSVHeaders(rawCSV);
+      console.log(
+        "Fixed CSV header:",
+        normalizeCSVHeaders(rawCSV).split("\n")[0],
+      );
 
-          return [...prev, ...importedGames];
-        });
-      },
-    });
+      Papa.parse<Record<string, string>>(cleanCSV, {
+        header: true,
+        skipEmptyLines: true,
+        transform: (v) => v.replace(/^"|"$/g, "").trim(),
+        complete: (results) => {
+          const validationErrors = validateCSV(results.data);
+
+          if (validationErrors.length) {
+            setCsvErrors(validationErrors);
+            setCsvPreview([]);
+            return;
+          }
+
+          setCsvErrors([]);
+          setCsvPreview(results.data);
+        },
+      });
+    };
+
+    reader.readAsText(file);
     e.target.value = "";
   };
-  //import CSV
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  <input
-    ref={fileInputRef}
-    type="file"
-    accept=".csv"
-    style={{ display: "none" }}
-    onChange={(e) => {
-      console.log("onChange fired");
-      handleCSVImport(e);
-    }}
-  />;
+  //validate columns helper
+
+  const REQUIRED_COLUMNS = ["name", "platform"];
+
+  const validateCSV = (rows: Record<string, string>[]) => {
+    const errors: string[] = [];
+
+    if (!rows.length) {
+      errors.push("CSV is empty");
+      return errors;
+    }
+
+    const headers = Object.keys(rows[0]);
+
+    REQUIRED_COLUMNS.forEach((col) => {
+      if (!headers.includes(col)) {
+        errors.push(`Missing required column: ${col}`);
+      }
+    });
+
+    return errors;
+  };
+
+  /*
+    console.log("Parsed rows:", data[0]);
+    console.log("All keys:", Object.keys(data[0]));
+    console.log("First row object:", data[0]);
+*/
 
   //sync html dark class with isDarkMode
   useEffect(() => {
@@ -225,27 +283,17 @@ const App = () => {
     }
   }, [isDarkMode]);
 
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
+  // ref to hidden file input
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    Papa.parse<Record<string, string>>(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const importedGames = results.data.map((row, i) =>
-          csvRowToGame(row, games.length + i + 1),
-        );
-        setGames((prev) => [...prev, ...importedGames]);
-      },
+    csvImport.handleFile(file, () => {
+      setIsImportModalOpen(true);
     });
 
-    // Reset input to allow same file to be selected again
-    e.target.value = "";
+    e.target.value = ""; // reset input so same file can be reselected
   };
 
   return (
@@ -302,11 +350,7 @@ const App = () => {
 
               <li
                 className="cursor-pointer rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
-                onClick={() => {
-                  console.log("Import CSV clicked");
-                  handleImportClick(); // triggers csv file input
-                  setIsMenuOpen(false);
-                }}
+                onClick={() => fileInputRef.current?.click()}
               >
                 Import CSV
               </li>
@@ -316,14 +360,12 @@ const App = () => {
             </ul>
           </div>
         )}
-
         {isMenuOpen && ( //background overlay when menu is open
           <div
             onClick={() => setIsMenuOpen(false)}
             className="fixed inset-0 bg-black/10 backdrop-blur-sm z-30"
           />
         )}
-
         {isFilterOpen && (
           <div
             className="
@@ -348,7 +390,24 @@ const App = () => {
             </div>
           </div>
         )}
+        {csvErrors.length > 0 && (
+          <div className="text-red-500 text-sm">
+            {csvErrors.map((err) => (
+              <div key={err}>{err}</div>
+            ))}
+          </div>
+        )}
+        {csvPreview.length > 0 && (
+          <div className="mt-4 text-sm">
+            <div className="font-semibold mb-2">
+              CSV Preview ({csvPreview.length} rows)
+            </div>
 
+            <pre className="max-h-64 overflow-auto bg-gray-100 p-2 rounded">
+              {JSON.stringify(csvPreview.slice(0, 3), null, 2)}
+            </pre>
+          </div>
+        )}
         <GameList
           games={filteredGames}
           onEdit={handleEdit}
@@ -357,7 +416,6 @@ const App = () => {
           viewMode={viewMode}
         />
         <ConfirmDialog />
-
         <GameModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -375,14 +433,32 @@ const App = () => {
           onRenameTag={handleRenameTag}
           onDeleteTag={handleDeleteTag}
         />
+        isImportModalOpen && (
+        <CsvImportModal
+          isOpen={isImportModalOpen}
+          columns={csvImport.csvColumns} // parsed CSV headers
+          mapping={csvImport.mapping}
+          onChangeMapping={(field, column) => {
+            csvImport.setMapping((prev) => ({
+              ...prev,
+              [field]: column,
+            }));
+          }} // <- use setMapping here
+          onCancel={() => setIsImportModalOpen(false)} // <- rename onClose → onCancel
+          onConfirm={() => {
+            console.log("Mapping confirmed:", csvImport.mapping);
+            // logic to transform CSV rows → games here
+            setIsImportModalOpen(false);
+          }}
+        />
+        );
       </div>
-
       <input
-        ref={fileInputRef}
         type="file"
         accept=".csv"
         className="hidden"
-        onChange={handleCSVImport}
+        ref={fileInputRef}
+        onChange={handleFileChange}
       />
     </>
   );
